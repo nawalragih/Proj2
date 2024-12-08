@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db/database');
+const db = require('../db/db');
 
 // Get all bills
 router.get('/', async (req, res) => {
