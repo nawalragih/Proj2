@@ -15,6 +15,7 @@
             <a href="/">Home</a>
         </nav>
     </header>
+
     <main>
         <!-- David's Dashboard -->
         <section id="david-dashboard" style="display: none;">
@@ -39,6 +40,7 @@
             <div id="client-content" style="margin-top: 20px;"></div>
         </section>
     </main>
+
     <script>
         // Show David's Dashboard
         function showDavidDashboard() {
@@ -52,43 +54,149 @@
             document.getElementById('david-dashboard').style.display = 'none';
         }
 
-        // Placeholder functions for David's Dashboard
+        // Load and display incoming quotes for David
         async function loadIncomingQuotes() {
-            // Replace this with actual fetch code
-            document.getElementById('david-content').innerHTML = '<p>Loading incoming quotes...</p>';
+            const contentDiv = document.getElementById('david-content');
+            contentDiv.innerHTML = '<p>Loading incoming quotes...</p>';
+
+            try {
+                const response = await fetch('/quotes');
+                const quotes = await response.json();
+                contentDiv.innerHTML = quotes
+                    .map(q => `
+                        <div>
+                            <p><strong>Quote ID:</strong> ${q.id}</p>
+                            <p><strong>Client ID:</strong> ${q.clientId}</p>
+                            <p><strong>Address:</strong> ${q.address}</p>
+                            <p><strong>Square Feet:</strong> ${q.squareFeet}</p>
+                            <p><strong>Status:</strong> ${q.status || 'Pending'}</p>
+                        </div>
+                    `)
+                    .join('');
+            } catch (error) {
+                contentDiv.innerHTML = '<p>Error loading quotes.</p>';
+            }
         }
 
+        // Load and display work orders for David
         async function loadWorkOrders() {
-            // Replace this with actual fetch code
-            document.getElementById('david-content').innerHTML = '<p>Loading work orders...</p>';
+            const contentDiv = document.getElementById('david-content');
+            contentDiv.innerHTML = '<p>Loading work orders...</p>';
+
+            try {
+                const response = await fetch('/orders');
+                const orders = await response.json();
+                contentDiv.innerHTML = orders
+                    .map(o => `
+                        <div>
+                            <p><strong>Order ID:</strong> ${o.id}</p>
+                            <p><strong>Client ID:</strong> ${o.clientId}</p>
+                            <p><strong>Status:</strong> ${o.status}</p>
+                            <p><strong>Content:</strong> ${o.content}</p>
+                        </div>
+                    `)
+                    .join('');
+            } catch (error) {
+                contentDiv.innerHTML = '<p>Error loading work orders.</p>';
+            }
         }
 
+        // Load and display bills for David
         async function loadBills() {
-            // Replace this with actual fetch code
-            document.getElementById('david-content').innerHTML = '<p>Loading bills...</p>';
+            const contentDiv = document.getElementById('david-content');
+            contentDiv.innerHTML = '<p>Loading bills...</p>';
+
+            try {
+                const response = await fetch('/bills');
+                const bills = await response.json();
+                contentDiv.innerHTML = bills
+                    .map(b => `
+                        <div>
+                            <p><strong>Bill ID:</strong> ${b.id}</p>
+                            <p><strong>Client ID:</strong> ${b.clientId}</p>
+                            <p><strong>Amount:</strong> $${b.amount}</p>
+                            <p><strong>Status:</strong> ${b.status}</p>
+                        </div>
+                    `)
+                    .join('');
+            } catch (error) {
+                contentDiv.innerHTML = '<p>Error loading bills.</p>';
+            }
         }
 
-        async function generateRevenueReport() {
-            // Replace this with actual fetch code
+        // Placeholder for generating revenue report
+        function generateRevenueReport() {
+            const contentDiv = document.getElementById('david-content');
             const startDate = prompt('Enter start date (YYYY-MM-DD):');
             const endDate = prompt('Enter end date (YYYY-MM-DD):');
-            document.getElementById('david-content').innerHTML = `<p>Generating revenue report from ${startDate} to ${endDate}...</p>`;
+
+            contentDiv.innerHTML = `<p>Generating revenue report from ${startDate} to ${endDate}...</p>`;
         }
 
-        // Placeholder functions for Client Dashboard
+        // Load client quotes
         async function loadClientQuotes() {
-            // Replace this with actual fetch code
-            document.getElementById('client-content').innerHTML = '<p>Loading client quotes...</p>';
+            const contentDiv = document.getElementById('client-content');
+            contentDiv.innerHTML = '<p>Loading client quotes...</p>';
+
+            try {
+                const response = await fetch('/quotes');
+                const quotes = await response.json();
+                contentDiv.innerHTML = quotes
+                    .map(q => `
+                        <div>
+                            <p><strong>Quote ID:</strong> ${q.id}</p>
+                            <p><strong>Address:</strong> ${q.address}</p>
+                            <p><strong>Status:</strong> ${q.status}</p>
+                        </div>
+                    `)
+                    .join('');
+            } catch (error) {
+                contentDiv.innerHTML = '<p>Error loading client quotes.</p>';
+            }
         }
 
+        // Load client orders
         async function loadClientOrders() {
-            // Replace this with actual fetch code
-            document.getElementById('client-content').innerHTML = '<p>Loading client orders...</p>';
+            const contentDiv = document.getElementById('client-content');
+            contentDiv.innerHTML = '<p>Loading client orders...</p>';
+
+            try {
+                const response = await fetch('/orders');
+                const orders = await response.json();
+                contentDiv.innerHTML = orders
+                    .map(o => `
+                        <div>
+                            <p><strong>Order ID:</strong> ${o.id}</p>
+                            <p><strong>Status:</strong> ${o.status}</p>
+                            <p><strong>Content:</strong> ${o.content}</p>
+                        </div>
+                    `)
+                    .join('');
+            } catch (error) {
+                contentDiv.innerHTML = '<p>Error loading client orders.</p>';
+            }
         }
 
+        // Load client bills
         async function loadClientBills() {
-            // Replace this with actual fetch code
-            document.getElementById('client-content').innerHTML = '<p>Loading client bills...</p>';
+            const contentDiv = document.getElementById('client-content');
+            contentDiv.innerHTML = '<p>Loading client bills...</p>';
+
+            try {
+                const response = await fetch('/bills');
+                const bills = await response.json();
+                contentDiv.innerHTML = bills
+                    .map(b => `
+                        <div>
+                            <p><strong>Bill ID:</strong> ${b.id}</p>
+                            <p><strong>Amount:</strong> $${b.amount}</p>
+                            <p><strong>Status:</strong> ${b.status}</p>
+                        </div>
+                    `)
+                    .join('');
+            } catch (error) {
+                contentDiv.innerHTML = '<p>Error loading client bills.</p>';
+            }
         }
     </script>
 </body>
