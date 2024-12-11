@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const app = express();
 
@@ -9,10 +9,11 @@ const clientsRoutes = require('./routes/clients');
 const quotesRoutes = require('./routes/quotes');
 const ordersRoutes = require('./routes/orders');
 const billsRoutes = require('./routes/bills');
-const reportsRoutes = require ('./routes/reports');
+const reportsRoutes = require('./routes/reports');
 
 // Middleware
-app.use(bodyParser.json());
+app.use(cors()); // Ensure CORS is applied before routes
+app.use(express.json()); // Parse JSON payloads
 
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, '../public')));
