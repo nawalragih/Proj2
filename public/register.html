@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Registration</title>
+</head>
+<body>
+    <h1>Register a New Client</h1>
+    <form id="registerForm">
+        <input type="text" id="firstName" placeholder="First Name" required><br>
+        <input type="text" id="lastName" placeholder="Last Name" required><br>
+        <input type="text" id="address" placeholder="Address" required><br>
+        <input type="text" id="creditCardInfo" placeholder="Credit Card" required><br>
+        <input type="text" id="phoneNumber" placeholder="Phone Number" required><br>
+        <input type="email" id="email" placeholder="Email" required><br>
+        <button type="submit">Register</button>
+    </form>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const formData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                address: document.getElementById('address').value,
+                creditCardInfo: document.getElementById('creditCardInfo').value,
+                phoneNumber: document.getElementById('phoneNumber').value,
+                email: document.getElementById('email').value,
+            };
+
+            const response = await fetch('http://localhost:3000/clients/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+            if (data.message) {
+                alert('Client registered successfully');
+            } else {
+                alert('Error registering client');
+            }
+        });
+    </script>
+</body>
+</html>
