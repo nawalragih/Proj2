@@ -4,20 +4,92 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/style.css">
-    <title>Driveway Sealing Management</title>
+    <title>Dashboard</title>
 </head>
 <body>
     <header>
-        <h1>Driveway Sealing Service</h1>
+        <h1>Dashboard</h1>
         <nav>
-            <a href="#" onclick="openClientDashboard()">Client Dashboard</a>
-            <a href="#" onclick="openDavidDashboard()">David's Dashboard</a>
+            <button onclick="showDavidDashboard()">David's Dashboard</button>
+            <button onclick="showClientDashboard()">Client Dashboard</button>
+            <a href="/">Home</a>
         </nav>
     </header>
     <main>
-        <div id="content"></div>
-        <div id="client-content" style="margin-top: 20px;"></div> <!-- Added for quotes -->
+        <!-- David's Dashboard -->
+        <section id="david-dashboard" style="display: none;">
+            <h2>David Smith's Dashboard</h2>
+            <div>
+                <button onclick="loadIncomingQuotes()">Check Incoming Quotes</button>
+                <button onclick="loadWorkOrders()">Check Work Orders</button>
+                <button onclick="loadBills()">Check Bills</button>
+                <button onclick="generateRevenueReport()">Generate Revenue Report</button>
+            </div>
+            <div id="david-content" style="margin-top: 20px;"></div>
+        </section>
+
+        <!-- Client Dashboard -->
+        <section id="client-dashboard" style="display: none;">
+            <h2>Client Dashboard</h2>
+            <div>
+                <button onclick="loadClientQuotes()">View Quotes</button>
+                <button onclick="loadClientOrders()">View Orders</button>
+                <button onclick="loadClientBills()">View Bills</button>
+            </div>
+            <div id="client-content" style="margin-top: 20px;"></div>
+        </section>
     </main>
-    <script src="frontend/main.js"></script>
+    <script>
+        // Show David's Dashboard
+        function showDavidDashboard() {
+            document.getElementById('david-dashboard').style.display = 'block';
+            document.getElementById('client-dashboard').style.display = 'none';
+        }
+
+        // Show Client Dashboard
+        function showClientDashboard() {
+            document.getElementById('client-dashboard').style.display = 'block';
+            document.getElementById('david-dashboard').style.display = 'none';
+        }
+
+        // Placeholder functions for David's Dashboard
+        async function loadIncomingQuotes() {
+            // Replace this with actual fetch code
+            document.getElementById('david-content').innerHTML = '<p>Loading incoming quotes...</p>';
+        }
+
+        async function loadWorkOrders() {
+            // Replace this with actual fetch code
+            document.getElementById('david-content').innerHTML = '<p>Loading work orders...</p>';
+        }
+
+        async function loadBills() {
+            // Replace this with actual fetch code
+            document.getElementById('david-content').innerHTML = '<p>Loading bills...</p>';
+        }
+
+        async function generateRevenueReport() {
+            // Replace this with actual fetch code
+            const startDate = prompt('Enter start date (YYYY-MM-DD):');
+            const endDate = prompt('Enter end date (YYYY-MM-DD):');
+            document.getElementById('david-content').innerHTML = `<p>Generating revenue report from ${startDate} to ${endDate}...</p>`;
+        }
+
+        // Placeholder functions for Client Dashboard
+        async function loadClientQuotes() {
+            // Replace this with actual fetch code
+            document.getElementById('client-content').innerHTML = '<p>Loading client quotes...</p>';
+        }
+
+        async function loadClientOrders() {
+            // Replace this with actual fetch code
+            document.getElementById('client-content').innerHTML = '<p>Loading client orders...</p>';
+        }
+
+        async function loadClientBills() {
+            // Replace this with actual fetch code
+            document.getElementById('client-content').innerHTML = '<p>Loading client bills...</p>';
+        }
+    </script>
 </body>
 </html>
