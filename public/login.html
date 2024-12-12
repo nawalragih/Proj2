@@ -79,12 +79,11 @@
         .form-footer a:hover {
             text-decoration: underline;
         }
-
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Client Login</h1>
+        <h1>Login to Your Account</h1>
         <form id="loginForm">
             <div class="form-group">
                 <input type="email" id="email" placeholder="Email" required>
@@ -115,13 +114,11 @@
             });
 
             const data = await response.json();
-
             if (data.success) {
                 alert('Login successful');
-                // Redirect to the dashboard or another page
-                window.location.href = "/dashboard"; // Update this URL based on your application structure
+                window.location.href = "/dashboard"; // Redirect to the dashboard
             } else {
-                alert('Invalid login credentials');
+                alert(data.message || 'Invalid login credentials');
             }
         });
     </script>
