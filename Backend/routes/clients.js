@@ -35,4 +35,44 @@ router.post('/register', async (req, res) => {
     }
 });
 
+
+// POST route for client login
+router.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    // Validate input
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    try {
+        // Query the database for the user with the given email
+        const query = `
+            SELECT * FROM Clients WHERE email = ?
+        `;
+        
+        const [results] = await db.query(query, [email]);
+
+        // Check if user exists
+        if (results.length === 0) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        const client = results[0];
+
+        // Verify password (ensure you're hashing passwords in a real-world app!)
+        if (client.password !== password) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        // If valid, return a success message
+        res.status(200).json({ success: true, message: 'Login successful' });
+    } catch (error) {
+        console.error('Error logging in client:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+
 module.exports = router;

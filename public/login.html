@@ -97,30 +97,31 @@
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', async function (event) {
-            event.preventDefault();
+       document.getElementById('loginForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
 
-            const formData = {
-                email: document.getElementById('email').value,
-                password: document.getElementById('password').value
-            };
+    const formData = {
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value
+    };
 
-            const response = await fetch('http://localhost:3000/clients/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
+    const response = await fetch('http://localhost:3000/clients/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+    });
 
-            const data = await response.json();
-            if (data.success) {
-                alert('Login successful');
-                window.location.href = "/dashboard"; // Redirect to the dashboard
-            } else {
-                alert(data.message || 'Invalid login credentials');
-            }
-        });
+    const data = await response.json();
+    if (data.success) {
+        alert('Login successful');
+        window.location.href = "/dashboard"; // Redirect to the dashboard after successful login
+    } else {
+        alert(data.message || 'Invalid login credentials');
+    }
+});
+
     </script>
 </body>
 </html>
