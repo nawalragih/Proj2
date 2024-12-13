@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Quote Request</title>
+</head>
+<body>
+    <h1>Submit Quote Request for Driveway Sealing</h1>
+    <form id="quoteRequestForm">
+        <label for="address">Property Address:</label>
+        <input type="text" name="address" id="address" placeholder="Property Address" required />
+        <br>
+    
+        <label for="squareFeet">Square Feet:</label>
+        <input type="number" name="squareFeet" id="squareFeet" placeholder="Square Feet" required />
+        <br>
+    
+        <label for="proposedPrice">Proposed Price:</label>
+        <input type="number" name="proposedPrice" id="proposedPrice" placeholder="Proposed Price" required />
+        <br>
+    
+        <label for="note">Additional Notes:</label>
+        <textarea name="note" id="note" placeholder="Additional Notes"></textarea>
+        <br>
+    
+        <label for="images">Upload Images:</label>
+        <input type="file" name="images" id="images" accept="image/*" multiple />
+        <br>
+    
+        <button type="submit">Submit Request</button>
+    </form>
+    
+    <script>
+        document.getElementById('quoteRequestForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    const formData = new FormData(this);
+    const images = [];
+    const files = formData.getAll('images');
+    
+    for (const file of files) {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            images.push(reader.result);
+        };
+    }
+
+    // Wait for all images to load before proceeding
+    await new Promise(resolve => {
+        const interval = setInterval(() => {
+            if (images.length === files.length) {
+                clearInterval(interval);
+                resolve();
+            }
+        }, 100);
+    });
+
+    const data = {
+        clientId: getClientIdFromSession(),  // Automatically retrieved
+        address: formData.get('address'),
+        squareFeet: formData.get('squareFeet'),
+        proposedPrice: formData.get('proposedPrice'),
+        note: formData.get('note'),
+        images: images,
+    };
+
+    // Log the request payload to check if all values are correct
+    console.log('Sending quote request with data:', data);
+
+    const response = await fetch('/api/quoteRequest/quote-request', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    });
+
+    if (response.ok) {
+        alert('Quote request submitted successfully');
+    } else {
+        const error = await response.json();
+        alert(`Error: ${error.message}`);
+    }
+});
+    </script>
+    

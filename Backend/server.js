@@ -42,7 +42,12 @@ app.get('/', (req, res) => {
 
 // Route to serve the registration page
 app.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/register.html'));  // Update path if necessary
+    res.sendFile(path.join(__dirname, '../public/register.html'));  
+});
+
+// Route to serve the quote request page for clients
+app.get('/quoteRequest', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/quoteRequest.html'));  
 });
 
 // Start server
