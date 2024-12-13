@@ -12,9 +12,8 @@
         <nav>
             <button onclick="showDavidDashboard()">David's Dashboard</button>
             <button onclick="showClientDashboard()">Client Dashboard</button>
-            <a href="http://localhost:3000/register">
-                <button>Register</button>
-  
+            <a href="/">Home</a>
+            <button onclick="window.location.href='http://localhost:3000/register'">Register</button>
         </nav>
     </header>
 
@@ -101,7 +100,7 @@
             } catch (error) {
                 contentDiv.innerHTML = '<p>Error loading work orders.</p>';
             }
-        }d
+        }
 
         // Load and display bills for David
         async function loadBills() {
