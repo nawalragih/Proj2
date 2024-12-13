@@ -104,6 +104,8 @@
                 <input type="text" id="creditCardInfo" placeholder="Credit Card" required>
                 <input type="text" id="phoneNumber" placeholder="Phone Number" required>
                 <input type="email" id="email" placeholder="Email" required>
+                <input type="password" id="password" placeholder="Password" required>
+
             </div>
             <button type="submit">Register</button>
         </form>
@@ -123,6 +125,7 @@
                 creditCardInfo: document.getElementById('creditCardInfo').value,
                 phoneNumber: document.getElementById('phoneNumber').value,
                 email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
             };
 
             const response = await fetch('http://localhost:3000/clients/register', {
