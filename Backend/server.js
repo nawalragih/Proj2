@@ -10,7 +10,7 @@ const quotesRoutes = require('./routes/quotes');
 const ordersRoutes = require('./routes/orders');
 const billsRoutes = require('./routes/bills');
 const reportsRoutes = require('./routes/reports');
-const quoteRequestRouter = require('./routes/quoteRequest');  // New route for quote requests
+const quoteRequest = require('./routes/quoteRequest');  // New route for quote requests
 const quoteReviewRoutes = require('./routes/quoteReview');  // New route for David's review
 const quoteNegotiationRoutes = require('./routes/clientNegotiation');  // New route for quote negotiation
 const clientRegistrationRoutes = require('./routes/clientRegistration');  // Ensure this file exists
@@ -31,7 +31,7 @@ app.use('/reports', reportsRoutes);  // Handle reports
 
 // Handle API routes
 app.use('/api/clients/register', clientRegistrationRoutes);  // Client registration route
-app.use('/api/quoteRequest', quoteRequestRouter);  // Quote request route
+app.use('/api/quoteRequest', quoteRequest);  // Quote request route
 app.use('/api/quoteReview', quoteReviewRoutes);  // Quote review route for David
 app.use('/api/quoteNegotiation', quoteNegotiationRoutes);  // Quote negotiation route
 

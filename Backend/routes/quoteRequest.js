@@ -1,8 +1,11 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
-router.post('/quoteRequest', async (req, res) => {
-    const { clientId, propertyAddress, squareFeet, proposedPrice, note, images } = req.body;
+// This route handles POST requests
+router.post('/', upload.array('images'), async (req, res) => { 
+    const { clientId, propertyAddress, squareFeet, proposedPrice, note } = req.body;
 
     // Validate required fields
     if (!clientId || !propertyAddress || !squareFeet || !proposedPrice) {
