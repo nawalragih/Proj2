@@ -4,10 +4,10 @@ const db = require('../db/db');  // Assuming you have a database connection file
 
 // POST route for client registration
 router.post('/', async (req, res) => {
-    const { firstName, lastName, address, creditCardInfo, phoneNumber, email } = req.body;
+    const { firstName, lastName, propertyAddress, creditCardInfo, phoneNumber, email } = req.body;
 
     // Validate input
-    if (!firstName || !lastName || !address || !creditCardInfo || !phoneNumber || !email) {
+    if (!firstName || !lastName || !propertyAddress || !creditCardInfo || !phoneNumber || !email) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -16,8 +16,8 @@ router.post('/', async (req, res) => {
 
     try {
         await db.query(
-            'INSERT INTO Clients (clientId, firstName, lastName, address, creditCardInfo, phoneNumber, email) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [clientId, firstName, lastName, address, creditCardInfo, phoneNumber, email]
+            'INSERT INTO Clients (clientId, firstName, lastName, propertyAddress, creditCardInfo, phoneNumber, email) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [clientId, firstName, lastName, propertyAddress, creditCardInfo, phoneNumber, email]
         );
         res.status(201).json({ message: 'Client registered successfully', clientId });
     } catch (error) {

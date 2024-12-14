@@ -15,10 +15,10 @@ router.get('/', async (req, res) => {
 
 // POST route to add a quote
 router.post('/', async (req, res) => {
-    const { clientId, address, squareFeet, proposedPrice, status, dateRequested } = req.body;
+    const { clientId, propertyAddress, squareFeet, proposedPrice, status, dateRequested } = req.body;
 
     // Validate input
-    if (!clientId || !address || !squareFeet || !status) {
+    if (!clientId || !propertyAddress|| !squareFeet || !status) {
         return res.status(400).json({ error: 'Missing required fields: clientId, address, squareFeet, and status' });
     }
 
@@ -26,7 +26,7 @@ router.post('/', async (req, res) => {
         // Insert the new quote into the database
         await db.query(
             'INSERT INTO Quotes (clientId, propertyAddress, squareFeet, proposedPrice, status, dateRequested) VALUES (?, ?, ?, ?, ?, ?)',
-            [clientId, address, squareFeet, proposedPrice || null, status, dateRequested || null] // Optional fields handled
+            [clientId, propertyAddress, squareFeet, proposedPrice || null, status, dateRequested || null] // Optional fields handled
         );
         res.status(201).json({ message: 'Quote submitted successfully' });
     } catch (error) {

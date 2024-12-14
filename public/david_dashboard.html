@@ -47,7 +47,7 @@
                         <div>
                             <p><strong>Quote ID:</strong> ${q.id}</p>
                             <p><strong>Client ID:</strong> ${q.clientId}</p>
-                            <p><strong>Address:</strong> ${q.address}</p>
+                            <p><strong>propertyAddress:</strong> ${q.propertyAddress}</p>
                             <p><strong>Square Feet:</strong> ${q.squareFeet}</p>
                             <p><strong>Status:</strong> ${q.status || 'Pending'}</p>
                         </div>
@@ -111,6 +111,30 @@
             const endDate = prompt('Enter end date (YYYY-MM-DD):');
 
             contentDiv.innerHTML = `<p>Generating revenue report from ${startDate} to ${endDate}...</p>`;
+        }
+
+        // Revise the quote and send it back to the client
+        function reviseQuote(quoteId) {
+            const newPrice = prompt("Enter the new proposed price:");
+
+            if (newPrice) {
+                fetch(`/quote-request/${quoteId}/resubmit`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ proposedPrice: newPrice })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    loadIncomingQuotes();  // Reload incoming quotes after revision
+                })
+                .catch(error => {
+                    alert('Error revising quote');
+                    console.error(error);
+                });
+            }
         }
     </script>
 </body>

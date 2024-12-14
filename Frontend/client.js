@@ -6,7 +6,7 @@ async function loadClientQuotes() {
 
         const contentDiv = document.getElementById('client-content');
         contentDiv.innerHTML = quotes
-            .map((q) => `<p>Client ID: ${q.clientId}, Address: ${q.address}, ${q.squareFeet} sqft</p>`)
+            .map((q) => `<p>Client ID: ${q.clientId}, propertyAddress: ${q.propertyAddress}, ${q.squareFeet} sqft</p>`)
             .join('');
     } catch (error) {
         console.error(error);
@@ -17,13 +17,13 @@ async function loadClientQuotes() {
 async function submitQuote() {
     try {
         const clientId = prompt('Enter your client ID');
-        const address = prompt('Enter property address');
+        const propertyAddress = prompt('Enter property propertyAddress');
         const squareFeet = prompt('Enter driveway size in square feet');
 
         const response = await fetch('/quotes', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ clientId, address, squareFeet }),
+            body: JSON.stringify({ clientId, propertyAddress, squareFeet }),
         });
 
         if (response.ok) {

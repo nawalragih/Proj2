@@ -1,53 +1,38 @@
-// Frontend logic for submitting the quote request form
-document.getElementById('quoteRequestForm').addEventListener('submit', async function(event) {
-    event.preventDefault();
+// Frontend - quoteRequest.js
+document.getElementById('quoteRequestForm').addEventListener('submit', async function (event) {
+    event.preventDefault();  // Prevent form from submitting normally
 
-    const formData = new FormData(this);
-    const images = [];
-    const files = formData.getAll('images');
-    
-    for (const file of files) {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => {
-            images.push(reader.result);
-        };
+    const formData = new FormData();
+    formData.append('clientId', document.getElementById('clientId').value);
+    formData.append('propertyAddress', document.getElementById('propertyAddress').value);
+    formData.append('squareFeet', document.getElementById('squareFeet').value);
+    formData.append('proposedPrice', document.getElementById('proposedPrice').value);
+    formData.append('note', document.getElementById('note').value);
+
+    // Handle image uploads
+    const images = document.getElementById('images').files;
+    for (let i = 0; i < images.length; i++) {
+        formData.append('images', images[i]);
     }
 
-    // Wait for all images to load before proceeding
-    await new Promise(resolve => {
-        const interval = setInterval(() => {
-            if (images.length === files.length) {
-                clearInterval(interval);
-                resolve();
-            }
-        }, 100);
-    });
+    try {
+        const response = await fetch('http://localhost:3000/api/quoteRequest', {
+            method: 'POST',
+            body: formData
+        });
 
-    const data = {
-        clientId: getClientIdFromSession(),  // Automatically retrieved from session or auth token
-        address: formData.get('address'),
-        squareFeet: formData.get('squareFeet'),
-        proposedPrice: formData.get('proposedPrice'),
-        note: formData.get('note'),
-        images: images,
-    };
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error response from server:', errorText);
+            alert('Error submitting quote request. Please check the form and try again.');
+            return;
+        }
 
-    // Log the request payload to check if all values are correct
-    console.log('Sending quote request with data:', data);
-
-    const response = await fetch('/api/quoteRequest/quote-request', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-    });
-
-    if (response.ok) {
-        alert('Quote request submitted successfully');
-    } else {
-        const error = await response.json();
-        alert(`Error: ${error.message}`);
+        const data = await response.json();
+        alert('Quote request submitted successfully!');
+        window.location.href = 'clientDashboard.html';  // Redirect to the client dashboard
+    } catch (error) {
+        console.error('Network error:', error);
+        alert('Failed to submit the request. Please try again later.');
     }
 });

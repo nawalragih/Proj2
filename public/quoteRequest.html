@@ -15,7 +15,6 @@
             align-items: center;
             height: 100vh;
         }
-
         .container {
             background-color: white;
             padding: 30px;
@@ -25,20 +24,17 @@
             max-width: 400px;
             text-align: left;
         }
-
         h1 {
             color: #333;
             margin-bottom: 20px;
             font-size: 28px;
             text-align: left;
         }
-
         form {
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
-
         input[type="text"],
         input[type="number"],
         textarea,
@@ -49,13 +45,11 @@
             border-radius: 4px;
             width: 100%;
         }
-
         input:focus,
         textarea:focus {
             border-color: #007BFF;
             outline: none;
         }
-
         button {
             background-color: #007BFF;
             color: white;
@@ -63,11 +57,9 @@
             font-weight: bold;
             transition: background-color 0.3s ease;
         }
-
         button:hover {
             background-color: #0056b3;
         }
-
         label {
             font-weight: bold;
             margin-bottom: 5px;
@@ -78,8 +70,8 @@
     <div class="container">
         <h1>Submit Quote Request</h1>
         <form id="quoteRequestForm">
-            <label for="address">Property Address:</label>
-            <input type="text" name="address" id="address" placeholder="Property Address" required />
+            <label for="propertyAddress">Property propertyAddress:</label>
+            <input type="text" name="propertyAddress" id="propertyAddress" placeholder="Property propertyAddress" required />
 
             <label for="squareFeet">Square Feet:</label>
             <input type="number" name="squareFeet" id="squareFeet" placeholder="Square Feet" required />
@@ -100,35 +92,39 @@
     <script>
         document.getElementById('quoteRequestForm').addEventListener('submit', async function (event) {
             event.preventDefault();
-    
+
             const formData = new FormData();
-            formData.append('address', document.getElementById('address').value);
+            formData.append('propertyAddress', document.getElementById('propertyAddress').value);
             formData.append('squareFeet', document.getElementById('squareFeet').value);
             formData.append('proposedPrice', document.getElementById('proposedPrice').value);
             formData.append('note', document.getElementById('note').value);
-    
+
             const images = document.getElementById('images').files;
             for (let i = 0; i < images.length; i++) {
                 formData.append('images', images[i]);
             }
-    
+
             try {
-                const response = await fetch('http://localhost:3000/quoteRequest/submit', {
+                const response = await fetch('http://localhost:3000/api/quoteRequest', {
                     method: 'POST',
                     body: formData
                 });
-    
-                const data = await response.json();
-                if (data.message) {
+                let data;
+                if (response.ok) {
+                    data = await response.json(); // Parse JSON if the response is OK
                     alert('Quote request submitted successfully');
-                    // Redirect to the client's dashboard page
                     window.location.href = 'clientDashboard.html';
                 } else {
-                    alert('Error submitting quote request');
+                    const errorText = await response.text(); // Read the raw response
+                    console.error('Error response from server:', errorText);
+                    alert(`Error: ${response.status} - ${response.statusText}`);
+                    return;
                 }
             } catch (error) {
-                console.error('Error:', error);
-                alert('An unexpected error occurred');
+                console.error('Network error:', error);
+                alert('Failed to submit the request. Please try again later.');
             }
         });
-    </script>  
+    </script>
+</body>
+</html>

@@ -37,7 +37,7 @@ async function loadIncomingQuotes() {
             <div>
                 <p>Quote ID: ${q.id}</p>
                 <p>Client ID: ${q.clientId}</p>
-                <p>Address: ${q.address}</p>
+                <p>propertyAddress: ${q.propertyAddress}</p>
                 <p>Square Feet: ${q.squareFeet}</p>
                 <p>Status: ${q.status || 'Pending'}</p>
                 <button onclick="respondToQuote(${q.id})">Respond</button>
@@ -162,7 +162,7 @@ async function loadClientQuotes() {
                 (q) => `
             <div>
                 <p>Quote ID: ${q.id}</p>
-                <p>Address: ${q.address}</p>
+                <p>propertyAddress: ${q.propertyAddress}</p>
                 <p>Status: ${q.status}</p>
                 <button onclick="respondToQuote(${q.id})">Respond</button>
             </div>

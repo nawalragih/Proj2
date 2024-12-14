@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Quote and Bill Negotiation</title>
+</head>
+<body>
+    <header>
+        <h1>Negotiation with David Smith</h1>
+    </header>
+    <main>
+        <section class="quote-bill-container">
+            <div class="quote">
+                <h2>Quote</h2>
+                <p>Price: <span id="quote-price">$1000</span></p>
+                <label for="quote-response">Your Offer:</label>
+                <input type="number" id="quote-response" placeholder="Enter your price" />
+                <button onclick="submitQuoteResponse()">Submit Quote</button>
+            </div>
+            <div class="bill">
+                <h2>Bill</h2>
+                <p>Price: <span id="bill-price">$1200</span></p>
+                <label for="bill-response">Your Offer:</label>
+                <input type="number" id="bill-response" placeholder="Enter your price" />
+                <button onclick="submitBillResponse()">Submit Bill</button>
+            </div>
+        </section>
+    </main>
+    <script src="client-negotiation.js"></script>
+</body>
+</html>
