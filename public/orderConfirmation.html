@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+            color: #444;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h3 {
+            margin-bottom: 15px;
+            font-size: 24px;
+            color: #007BFF;
+        }
+
+        .info-row {
+            margin-bottom: 10px;
+        }
+
+        .info-row strong {
+            width: 180px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .info-row span {
+            font-weight: normal;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #444;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        .btn {
+            background-color: #007BFF;
+            color: white;
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .back-link a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Order Confirmation</h1>
+
+        <!-- Client Information Section -->
+        <div class="section">
+            <h3>Client Information</h3>
+            <div class="info-row">
+                <strong>Client Name:</strong> <span id="clientName">Loading...</span>
+            </div>
+            <div class="info-row">
+                <strong>Contact Email:</strong> <span id="clientEmail">Loading...</span>
+            </div>
+            <div class="info-row">
+                <strong>Phone Number:</strong> <span id="clientPhone">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Quote Details Section -->
+        <div class="section">
+            <h3>Quote Details</h3>
+            <div class="info-row">
+                <strong>Property Address:</strong> <span id="propertyAddress">Loading...</span>
+            </div>
+            <div class="info-row">
+                <strong>Square Feet:</strong> <span id="squareFeet">Loading...</span>
+            </div>
+            <div class="info-row">
+                <strong>Proposed Price:</strong> $<span id="proposedPrice">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Order Confirmation Form -->
+        <form id="orderConfirmationForm">
+            <div class="form-group">
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="endDate">End Date:</label>
+                <input type="date" id="endDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="note">Additional Notes:</label>
+                <textarea id="note" placeholder="Any additional notes about the work?"></textarea>
+            </div>
+
+            <button type="submit" class="btn">Confirm Order</button>
+        </form>
+
+        <div class="back-link">
+            <p><a href="/client_dashboard.html">Back to Dashboard</a></p>
+        </div>
+    </div>
+
+    <script>
+        async function fetchClientInfo() {
+            const clientId = 1; 
+            try {
+                const response = await fetch(`http://localhost:3000/api/client/${clientId}`);
+                const clientData = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('clientName').textContent = `${clientData.firstName} ${clientData.lastName}`;
+                    document.getElementById('clientEmail').textContent = clientData.email;
+                    document.getElementById('clientPhone').textContent = clientData.phoneNumber;
+                } else {
+                    alert('Error fetching client data');
+                }
+            } catch (error) {
+                console.error('Error fetching client data:', error);
+                alert('Error fetching client data');
+            }
+        }
+
+    
+        async function fetchQuoteInfo() {
+            const quoteId = 1; 
+            try {
+                const response = await fetch(`http://localhost:3000/api/quote/${quoteId}`);
+                const quoteData = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('propertyAddress').textContent = quoteData.address;
+                    document.getElementById('squareFeet').textContent = quoteData.squareFeet;
+                    document.getElementById('proposedPrice').textContent = quoteData.proposedPrice;
+                } else {
+                    alert('Error fetching quote data');
+                }
+            } catch (error) {
+                console.error('Error fetching quote data:', error);
+                alert('Error fetching quote data');
+            }
+        }
+
+
+        fetchClientInfo();
+        fetchQuoteInfo();
+
+        document.getElementById('orderConfirmationForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const note = document.getElementById('note').value;
+            const quoteId = 1; 
+
+            const response = await fetch(`http://localhost:3000/api/order/confirm/${quoteId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    startDate,
+                    endDate,
+                    note 
+                })
+            });
+
+            if (response.ok) {
+                alert('Order confirmed and contract created!');
+                window.location.href = '/dashboard'; 
+            } else {
+                alert('Error confirming the order.');
+            }
+        });
+    </script>
+</body>
+</html>
