@@ -98,30 +98,33 @@
 
     <script>
        document.getElementById('loginForm').addEventListener('submit', async function (event) {
-    event.preventDefault();
+            event.preventDefault();
 
-    const formData = {
-        email: document.getElementById('email').value,
-        password: document.getElementById('password').value
-    };
+            const formData = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
 
-    const response = await fetch('http://localhost:3000/clients/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-    });
+            const response = await fetch('http://localhost:3000/clients/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
 
-    const data = await response.json();
-    if (data.success) {
-        alert('Login successful');
-        window.location.href = "/dashboard"; // Redirect to the dashboard after successful login
-    } else {
-        alert(data.message || 'Invalid login credentials');
-    }
-});
-
+            const data = await response.json();
+            if (data.success) {
+                // Check if the login is for "david@gmail.com" with password "123"
+                if (formData.email === 'david@gmail.com' && formData.password === '123') {
+                    window.location.href = "david_dashboard.html"; // Redirect to David's dashboard
+                } else {
+                    window.location.href = "client_dashboard.html"; // Redirect to the general client dashboard
+                }
+            } else {
+                alert(data.message || 'Invalid login credentials');
+            }
+        });
     </script>
 </body>
 </html>
