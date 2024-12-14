@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <title>Dashboard</title>
+</head>
+<body>
+    <header>
+        <h1>Dashboard</h1>
+        <nav>
+            <button onclick="showClientDashboard()">Client Dashboard</button>
+            <a href="/">Home</a>
+            <button onclick="window.location.href='http://localhost:3000/register'">Register</button>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Client Dashboard -->
+        <section id="client-dashboard" style="display: none;">
+            <h2>Client Dashboard</h2>
+            <div>
+                <button onclick="loadClientQuotes()">View Quotes</button>
+                <button onclick="loadClientOrders()">View Orders</button>
+                <button onclick="loadClientBills()">View Bills</button>
+                <button onclick="redirectToQuoteRequest()">Submit a Quote Request</button>
+            </div>
+            <div id="client-content" style="margin-top: 20px;"></div>
+        </section>
+    </main>
+
+    <script>
+        // Show Client Dashboard
+        function showClientDashboard() {
+            document.getElementById('client-dashboard').style.display = 'block';
+            document.getElementById('david-dashboard').style.display = 'none';
+        }
+        // Load client quotes
+        async function loadClientQuotes() {
+            const contentDiv = document.getElementById('client-content');
+            contentDiv.innerHTML = '<p>Loading client quotes...</p>';
+
+            try {
+                const response = await fetch('/quotes');
+                const quotes = await response.json();
+                contentDiv.innerHTML = quotes
+                    .map(q => `
+                        <div>
+                            <p><strong>Quote ID:</strong> ${q.id}</p>
+                            <p><strong>Address:</strong> ${q.address}</p>
+                            <p><strong>Status:</strong> ${q.status}</p>
+                        </div>
+                    `)
+                    .join('');
+            } catch (error) {
+                contentDiv.innerHTML = '<p>Error loading client quotes.</p>';
+            }
+        }
+
+        // Load client orders
+        async function loadClientOrders() {
+            const contentDiv = document.getElementById('client-content');
+            contentDiv.innerHTML = '<p>Loading client orders...</p>';
+
+            try {
+                const response = await fetch('/orders');
+                const orders = await response.json();
+                contentDiv.innerHTML = orders
+                    .map(o => `
+                        <div>
+                            <p><strong>Order ID:</strong> ${o.id}</p>
+                            <p><strong>Status:</strong> ${o.status}</p>
+                            <p><strong>Content:</strong> ${o.content}</p>
+                        </div>
+                    `)
+                    .join('');
+            } catch (error) {
+                contentDiv.innerHTML = '<p>Error loading client orders.</p>';
+            }
+        }
+
+        // Load client bills
+        async function loadClientBills() {
+            const contentDiv = document.getElementById('client-content');
+            contentDiv.innerHTML = '<p>Loading client bills...</p>';
+
+            try {
+                const response = await fetch('/bills');
+                const bills = await response.json();
+                contentDiv.innerHTML = bills
+                    .map(b => `
+                        <div>
+                            <p><strong>Bill ID:</strong> ${b.id}</p>
+                            <p><strong>Amount:</strong> $${b.amount}</p>
+                            <p><strong>Status:</strong> ${b.status}</p>
+                        </div>
+                    `)
+                    .join('');
+            } catch (error) {
+                contentDiv.innerHTML = '<p>Error loading client bills.</p>';
+            }
+        }
+
+        // Redirect to quote request page
+        function redirectToQuoteRequest() {
+            window.location.href = '/quoteRequest'; // Replace with the correct path
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
