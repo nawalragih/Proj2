@@ -4,201 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/style.css">
-    <title>Dashboard</title>
+    <title>Home</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        h1 {
+            color: black; /* Ensure text color is black */
+            margin-bottom: 20px;
+            font-size: 48px;
+            text-align: center;
+            width: 100%;
+        }
+
+        header {
+            background-color: transparent; /* No background color for the header */
+            padding: 10px 0;
+        }
+
+        .buttons-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 20px 40px;
+            font-size: 24px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #003f7f;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <h1>Dashboard</h1>
-        <nav>
-            <button onclick="showDavidDashboard()">David's Dashboard</button>
-            <button onclick="showClientDashboard()">Client Dashboard</button>
-            <a href="/">Home</a>
-            <button onclick="window.location.href='http://localhost:3000/register'">Register</button>
-        </nav>
+        <h1>Welcome</h1>
     </header>
-
     <main>
-        <!-- David's Dashboard -->
-        <section id="david-dashboard" style="display: none;">
-            <h2>David Smith's Dashboard</h2>
-            <div>
-                <button onclick="loadIncomingQuotes()">Check Incoming Quotes</button>
-                <button onclick="loadWorkOrders()">Check Work Orders</button>
-                <button onclick="loadBills()">Check Bills</button>
-                <button onclick="generateRevenueReport()">Generate Revenue Report</button>
-            </div>
-            <div id="david-content" style="margin-top: 20px;"></div>
-        </section>
-
-        <!-- Client Dashboard -->
-        <section id="client-dashboard" style="display: none;">
-            <h2>Client Dashboard</h2>
-            <div>
-                <button onclick="loadClientQuotes()">View Quotes</button>
-                <button onclick="loadClientOrders()">View Orders</button>
-                <button onclick="loadClientBills()">View Bills</button>
-            </div>
-            <div id="client-content" style="margin-top: 20px;"></div>
-        </section>
+        <div class="buttons-container">
+            <button onclick="window.location.href='register.html'">Register</button>
+            <button onclick="window.location.href='login.html'">Login</button>
+        </div>
     </main>
-
-    <script>
-        // Show David's Dashboard
-        function showDavidDashboard() {
-            document.getElementById('david-dashboard').style.display = 'block';
-            document.getElementById('client-dashboard').style.display = 'none';
-        }
-
-        // Show Client Dashboard
-        function showClientDashboard() {
-            document.getElementById('client-dashboard').style.display = 'block';
-            document.getElementById('david-dashboard').style.display = 'none';
-        }
-
-        // Load and display incoming quotes for David
-        async function loadIncomingQuotes() {
-            const contentDiv = document.getElementById('david-content');
-            contentDiv.innerHTML = '<p>Loading incoming quotes...</p>';
-
-            try {
-                const response = await fetch('/quotes');
-                const quotes = await response.json();
-                contentDiv.innerHTML = quotes
-                    .map(q => `
-                        <div>
-                            <p><strong>Quote ID:</strong> ${q.id}</p>
-                            <p><strong>Client ID:</strong> ${q.clientId}</p>
-                            <p><strong>Address:</strong> ${q.address}</p>
-                            <p><strong>Square Feet:</strong> ${q.squareFeet}</p>
-                            <p><strong>Status:</strong> ${q.status || 'Pending'}</p>
-                        </div>
-                    `)
-                    .join('');
-            } catch (error) {
-                contentDiv.innerHTML = '<p>Error loading quotes.</p>';
-            }
-        }
-
-        // Load and display work orders for David
-        async function loadWorkOrders() {
-            const contentDiv = document.getElementById('david-content');
-            contentDiv.innerHTML = '<p>Loading work orders...</p>';
-
-            try {
-                const response = await fetch('/orders');
-                const orders = await response.json();
-                contentDiv.innerHTML = orders
-                    .map(o => `
-                        <div>
-                            <p><strong>Order ID:</strong> ${o.id}</p>
-                            <p><strong>Client ID:</strong> ${o.clientId}</p>
-                            <p><strong>Status:</strong> ${o.status}</p>
-                            <p><strong>Content:</strong> ${o.content}</p>
-                        </div>
-                    `)
-                    .join('');
-            } catch (error) {
-                contentDiv.innerHTML = '<p>Error loading work orders.</p>';
-            }
-        }
-
-        // Load and display bills for David
-        async function loadBills() {
-            const contentDiv = document.getElementById('david-content');
-            contentDiv.innerHTML = '<p>Loading bills...</p>';
-
-            try {
-                const response = await fetch('/bills');
-                const bills = await response.json();
-                contentDiv.innerHTML = bills
-                    .map(b => `
-                        <div>
-                            <p><strong>Bill ID:</strong> ${b.id}</p>
-                            <p><strong>Client ID:</strong> ${b.clientId}</p>
-                            <p><strong>Amount:</strong> $${b.amount}</p>
-                            <p><strong>Status:</strong> ${b.status}</p>
-                        </div>
-                    `)
-                    .join('');
-            } catch (error) {
-                contentDiv.innerHTML = '<p>Error loading bills.</p>';
-            }
-        }
-
-        // Placeholder for generating revenue report
-        function generateRevenueReport() {
-            const contentDiv = document.getElementById('david-content');
-            const startDate = prompt('Enter start date (YYYY-MM-DD):');
-            const endDate = prompt('Enter end date (YYYY-MM-DD):');
-
-            contentDiv.innerHTML = `<p>Generating revenue report from ${startDate} to ${endDate}...</p>`;
-        }
-
-        // Load client quotes
-        async function loadClientQuotes() {
-            const contentDiv = document.getElementById('client-content');
-            contentDiv.innerHTML = '<p>Loading client quotes...</p>';
-
-            try {
-                const response = await fetch('/quotes');
-                const quotes = await response.json();
-                contentDiv.innerHTML = quotes
-                    .map(q => `
-                        <div>
-                            <p><strong>Quote ID:</strong> ${q.id}</p>
-                            <p><strong>Address:</strong> ${q.address}</p>
-                            <p><strong>Status:</strong> ${q.status}</p>
-                        </div>
-                    `)
-                    .join('');
-            } catch (error) {
-                contentDiv.innerHTML = '<p>Error loading client quotes.</p>';
-            }
-        }
-
-        // Load client orders
-        async function loadClientOrders() {
-            const contentDiv = document.getElementById('client-content');
-            contentDiv.innerHTML = '<p>Loading client orders...</p>';
-
-            try {
-                const response = await fetch('/orders');
-                const orders = await response.json();
-                contentDiv.innerHTML = orders
-                    .map(o => `
-                        <div>
-                            <p><strong>Order ID:</strong> ${o.id}</p>
-                            <p><strong>Status:</strong> ${o.status}</p>
-                            <p><strong>Content:</strong> ${o.content}</p>
-                        </div>
-                    `)
-                    .join('');
-            } catch (error) {
-                contentDiv.innerHTML = '<p>Error loading client orders.</p>';
-            }
-        }
-
-        // Load client bills
-        async function loadClientBills() {
-            const contentDiv = document.getElementById('client-content');
-            contentDiv.innerHTML = '<p>Loading client bills...</p>';
-
-            try {
-                const response = await fetch('/bills');
-                const bills = await response.json();
-                contentDiv.innerHTML = bills
-                    .map(b => `
-                        <div>
-                            <p><strong>Bill ID:</strong> ${b.id}</p>
-                            <p><strong>Amount:</strong> $${b.amount}</p>
-                            <p><strong>Status:</strong> ${b.status}</p>
-                        </div>
-                    `)
-                    .join('');
-            } catch (error) {
-                contentDiv.innerHTML = '<p>Error loading client bills.</p>';
-            }
-        }
-    </script>
 </body>
 </html>
