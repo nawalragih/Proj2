@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Negotiate Quote - Contractor</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+            color: #444;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h3 {
+            margin-bottom: 15px;
+            font-size: 24px;
+            color: #007BFF;
+        }
+
+        .info-row {
+            margin-bottom: 10px;
+        }
+
+        .info-row strong {
+            width: 180px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .info-row span {
+            font-weight: normal;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #444;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        .btn {
+            background-color: #007BFF;
+            color: white;
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .back-link a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Negotiate Quote</h1>
+
+        <!-- Quote Details Section -->
+        <div class="section">
+            <h3>Quote Details</h3>
+            <div class="info-row">
+                <strong>Property Address:</strong> <span id="propertyAddress">Loading...</span>
+            </div>
+            <div class="info-row">
+                <strong>Square Feet:</strong> <span id="squareFeet">Loading...</span>
+            </div>
+            <div class="info-row">
+                <strong>Client Proposed Price:</strong> $<span id="proposedPrice">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Negotiation Response Form Section -->
+        <form id="negotiationForm">
+            <div class="form-group">
+                <label for="counterPrice">Counter Offer Price:</label>
+                <input type="number" id="counterPrice" required>
+            </div>
+
+            <div class="form-group">
+                <label for="negotiationNote">Negotiation Note:</label>
+                <textarea id="negotiationNote" required></textarea>
+            </div>
+
+            <button type="submit" class="btn">Submit Counter Offer</button>
+        </form>
+
+        <div class="back-link">
+            <p><a href="/david_dashboard.html">Back to Dashboard</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Fetch quote details dynamically
+        async function fetchQuoteInfo() {
+            const quoteId = 1; // Replace with actual quoteId from session or URL
+            try {
+                const response = await fetch(`http://localhost:3000/api/quote/${quoteId}`);
+                const quoteData = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('propertyAddress').textContent = quoteData.address;
+                    document.getElementById('squareFeet').textContent = quoteData.squareFeet;
+                    document.getElementById('proposedPrice').textContent = quoteData.proposedPrice;
+                } else {
+                    alert('Error fetching quote data');
+                }
+            } catch (error) {
+                console.error('Error fetching quote data:', error);
+                alert('Error fetching quote data');
+            }
+        }
+
+        // Handle negotiation form submission
+        document.getElementById('negotiationForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const counterPrice = document.getElementById('counterPrice').value;
+            const negotiationNote = document.getElementById('negotiationNote').value;
+            const quoteId = 1; // Replace with actual quoteId
+
+            const response = await fetch(`http://localhost:3000/api/quote/${quoteId}/counter`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    counterPrice,
+                    negotiationNote
+                })
+            });
+
+            if (response.ok) {
+                alert('Counter offer submitted successfully!');
+                window.location.href = '/david_dashboard.html';
+            } else {
+                alert('Error submitting counter offer.');
+            }
+        });
+
+        fetchQuoteInfo();
+    </script>
+</body>
+</html>
