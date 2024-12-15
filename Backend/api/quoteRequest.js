@@ -11,22 +11,20 @@ const db = mysql.createConnection({
 });
 
 module.exports = db;
-
-
 router.post('/create', isLoggedIn, async (req, res) => {
     const { propertyAddress, squareFeet, proposedPrice, note } = req.body;
-    const id = req.session.user?.id;
+    const clientID = req.session.user?.id;
 
-    if (!id) {
+    if (!clientID) {
         console.log('Client ID missing');
         return res.status(401).json({ error: 'Client ID is missing. Please log in first.' });
     }
 
     try {
-        console.log('Inserting quote:', { id, propertyAddress, squareFeet, proposedPrice, note });
+        console.log('Inserting quote:', { clientID, propertyAddress, squareFeet, proposedPrice, note });
 
-        const query = 'INSERT INTO quotes (id, propertyAddress, squareFeet, proposedPrice, note) VALUES (?, ?, ?, ?, ?)';
-        const result = await db.query(query, [id, propertyAddress, squareFeet, proposedPrice, note]);
+        const query = 'INSERT INTO quotes (clientId, propertyAddress, squareFeet, proposedPrice, note) VALUES (?, ?, ?, ?, ?)';
+        const result = await db.promise().query(query, [clientID, propertyAddress, squareFeet, proposedPrice, note]);
 
         console.log('Quote insertion result:', result);  // Log the result to check if insertion was successful
 
