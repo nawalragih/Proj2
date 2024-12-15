@@ -91,40 +91,51 @@
 
     <script>
         document.getElementById('quoteRequestForm').addEventListener('submit', async function (event) {
-            event.preventDefault();
+    event.preventDefault();
 
-            const formData = new FormData();
-            formData.append('propertyAddress', document.getElementById('propertyAddress').value);
-            formData.append('squareFeet', document.getElementById('squareFeet').value);
-            formData.append('proposedPrice', document.getElementById('proposedPrice').value);
-            formData.append('note', document.getElementById('note').value);
+    // Retrieve clientId from sessionStorage
+    const clientId = sessionStorage.getItem('clientId');
+    console.log('clientId from sessionStorage:', clientId); // Debugging
 
-            const images = document.getElementById('images').files;
-            for (let i = 0; i < images.length; i++) {
-                formData.append('images', images[i]);
-            }
+    // If clientId is not available, redirect to login
+    if (!clientId) {
+        alert('Client ID is missing. Please log in first.');
+        window.location.href = 'login.html'; // Redirect to login page
+        return;
+    }
 
-            try {
-                const response = await fetch('http://localhost:3000/api/quoteRequest', {
-                    method: 'POST',
-                    body: formData
-                });
-                let data;
-                if (response.ok) {
-                    data = await response.json(); // Parse JSON if the response is OK
-                    alert('Quote request submitted successfully');
-                    window.location.href = 'clientDashboard.html';
-                } else {
-                    const errorText = await response.text(); // Read the raw response
-                    console.error('Error response from server:', errorText);
-                    alert(`Error: ${response.status} - ${response.statusText}`);
-                    return;
-                }
-            } catch (error) {
-                console.error('Network error:', error);
-                alert('Failed to submit the request. Please try again later.');
-            }
+    // Collect form data
+    const formData = {
+        clientId, // Use clientId from sessionStorage
+        propertyAddress: document.getElementById('propertyAddress').value,
+        squareFeet: document.getElementById('squareFeet').value,
+        proposedPrice: document.getElementById('proposedPrice').value,
+        note: document.getElementById('note').value
+    };
+
+    try {
+        const response = await fetch('http://localhost:3000/api/quoteRequest', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
         });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error response from server:', errorText);
+            alert('Error submitting quote request. Please check the form and try again.');
+            return;
+        }
+
+        const data = await response.json();
+        alert('Quote request submitted successfully!');
+        window.location.href = 'clientDashboard.html'; // Redirect after success
+    } catch (error) {
+        console.error('Network error:', error);
+        alert('Failed to submit the request. Please try again later.');
+    }
+});
+
     </script>
 </body>
 </html>

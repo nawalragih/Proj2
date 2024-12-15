@@ -1,10 +1,8 @@
 const express = require('express');
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
-
 const router = express.Router();
+const db = require('../db'); // Import database connection
 
-router.post('/', upload.array('images'), async (req, res) => {
+router.post('/', async (req, res) => {
     const { clientId, propertyAddress, squareFeet, proposedPrice, note } = req.body;
 
     // Validate required fields
@@ -13,9 +11,12 @@ router.post('/', upload.array('images'), async (req, res) => {
     }
 
     try {
-        console.log('Quote request received:', req.body);
-        // Handle image uploads if necessary
-        console.log('Uploaded files:', req.files);
+        const status = 'Pending';
+        const query = `
+            INSERT INTO quotes (clientId, propertyAddress, squareFeet, proposedPrice, status, note)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `;
+        await db.execute(query, [clientId, propertyAddress, squareFeet, proposedPrice, status, note]);
 
         res.status(201).json({ message: 'Quote request submitted successfully' });
     } catch (error) {
