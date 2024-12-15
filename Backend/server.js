@@ -117,6 +117,37 @@ app.post('/login', (req, res) => {
         });
 });
 
+// In server.js
+// Route to handle the quote request
+app.post('/quoteRequest', async (req, res) => {
+    const { userId, propertyAddress, squareFeet, proposedPrice, note } = req.body;
+
+    // Ensure we have all the required fields
+    if (!userId || !propertyAddress || !squareFeet || !proposedPrice) {
+        return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    // Get the current date and time for the `createdAt` field
+    const createdAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+    try {
+        const query = `INSERT INTO quotes (clientId, propertyAddress, squareFeet, proposedPrice, status, createdAt, note)
+                       VALUES (?, ?, ?, ?, 'Pending', ?, ?)`;
+        const [result] = await pool.execute(query, [userId, propertyAddress, squareFeet, proposedPrice, createdAt, note]);
+
+        // Send a success response with the quote ID
+        res.json({
+            message: 'Quote request submitted successfully!',
+            quoteId: result.insertId,
+        });
+    } catch (err) {
+        console.error('Error inserting quote:', err);
+        return res.status(500).json({ message: 'Error submitting quote request' });
+    }
+});
+
+
+
 
 // Example route: Get user details by email
 app.post('/get-user-by-email', (req, res) => {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit Quote Request</title>
+    <title>Quote Request</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -15,6 +15,7 @@
             align-items: center;
             height: 100vh;
         }
+
         .container {
             background-color: white;
             padding: 30px;
@@ -24,20 +25,22 @@
             max-width: 400px;
             text-align: left;
         }
+
         h1 {
             color: #333;
             margin-bottom: 20px;
             font-size: 28px;
             text-align: left;
         }
+
         form {
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
+
         input[type="text"],
         input[type="number"],
-        textarea,
         button {
             padding: 12px;
             font-size: 16px;
@@ -45,11 +48,13 @@
             border-radius: 4px;
             width: 100%;
         }
-        input:focus,
-        textarea:focus {
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
             border-color: #007BFF;
             outline: none;
         }
+
         button {
             background-color: #007BFF;
             color: white;
@@ -57,85 +62,61 @@
             font-weight: bold;
             transition: background-color 0.3s ease;
         }
+
         button:hover {
             background-color: #0056b3;
-        }
-        label {
-            font-weight: bold;
-            margin-bottom: 5px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Submit Quote Request</h1>
+        <h1>Request a Quote</h1>
         <form id="quoteRequestForm">
-            <label for="propertyAddress">Property propertyAddress:</label>
-            <input type="text" name="propertyAddress" id="propertyAddress" placeholder="Property propertyAddress" required />
-
-            <label for="squareFeet">Square Feet:</label>
-            <input type="number" name="squareFeet" id="squareFeet" placeholder="Square Feet" required />
-
-            <label for="proposedPrice">Proposed Price:</label>
-            <input type="number" name="proposedPrice" id="proposedPrice" placeholder="Proposed Price" required />
-
-            <label for="note">Additional Notes:</label>
-            <textarea name="note" id="note" placeholder="Additional Notes"></textarea>
-
-            <label for="images">Upload Images:</label>
-            <input type="file" name="images" id="images" accept="image/*" multiple />
-
-            <button type="submit">Submit Request</button>
+            <div class="form-group">
+                <input type="text" id="propertyAddress" placeholder="Property Address" required>
+                <input type="number" id="squareFootage" placeholder="Square Footage" required>
+                <input type="text" id="proposedPrice" placeholder="Proposed Price" required>
+                <textarea id="note" placeholder="Note (optional)"></textarea>
+            </div>
+            <button type="submit">Submit Quote Request</button>
         </form>
     </div>
 
     <script>
-        document.getElementById('quoteRequestForm').addEventListener('submit', async function (event) {
-    event.preventDefault();
-
-    // Retrieve id from sessionStorage
-    const id = sessionStorage.getItem('id');
-    console.log('id from sessionStorage:', id); // Debugging
-
-    // If id is not available, redirect to login
-    if (!id) {
-        alert('Client ID is missing. Please log in first.');
-        window.location.href = 'login.html'; // Redirect to login page
-        return;
-    }
-
-    // Collect form data
-    const formData = {
-        id, // Use id from sessionStorage
+        // Handle quote request submission
+        async function handleQuoteRequest() {
+    const quoteData = {
+        userId: localStorage.getItem('clientId'),
         propertyAddress: document.getElementById('propertyAddress').value,
-        squareFeet: document.getElementById('squareFeet').value,
+        squareFootage: document.getElementById('squareFootage').value,
         proposedPrice: document.getElementById('proposedPrice').value,
         note: document.getElementById('note').value
     };
 
-    try {
-        const response = await fetch('http://localhost:3000/api/quoteRequest', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
-        });
+    const response = await fetch('http://localhost:3000/quoteRequest', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(quoteData),
+        credentials: 'include'
+    });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Error response from server:', errorText);
-            alert('Error submitting quote request. Please check the form and try again.');
-            return;
-        }
-
+    if (response.ok) {
         const data = await response.json();
         alert('Quote request submitted successfully!');
-        window.location.href = 'clientDashboard.html'; // Redirect after success
-    } catch (error) {
-        console.error('Network error:', error);
-        alert('Failed to submit the request. Please try again later.');
-    }
-});
+        console.log(data);
 
+        // Redirect to the client dashboard
+        window.location.href = '/client_Dashboard.html';  // Adjust the URL to your dashboard page
+    } else {
+        const error = await response.json();
+        alert('Error submitting quote request: ' + error.message);
+        console.error(error);
+    }
+}
+
+        document.getElementById('quoteRequestForm').addEventListener('submit', handleQuoteRequest);
     </script>
 </body>
 </html>
