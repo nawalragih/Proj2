@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill Details - David Smith</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .bill-details, .bill-summary, .dispute-section, .revision-section {
+            margin-bottom: 20px;
+        }
+
+        .bill-details p, .bill-summary p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .bill-summary {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .bill-summary p {
+            margin: 10px 0;
+        }
+
+        .button-group {
+            text-align: center;
+        }
+
+        .button-group button {
+            padding: 12px 25px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            border: none;
+            color: #fff;
+            background-color: #4CAF50;
+        }
+
+        .button-group button.reject {
+            background-color: #f44336;
+        }
+
+        .revision-section {
+            margin-top: 20px;
+        }
+
+        .revision-section textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .revision-section button {
+            background-color: #ff9800;
+        }
+
+        .dispute-note {
+            margin-top: 20px;
+        }
+
+        .dispute-note h3 {
+            color: #f44336;
+        }
+
+        .dispute-note p {
+            font-style: italic;
+        }
+
+        .dispute-note button {
+            background-color: #ff9800;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Bill Details</h1>
+
+    <!-- Bill Details Section -->
+    <div class="bill-details">
+        <p><strong>Client:</strong> <span id="clientName"></span></p>
+        <p><strong>Bill ID:</strong> <span id="billId"></span></p>
+        <p><strong>Order ID:</strong> <span id="orderId"></span></p>
+        <p><strong>Work Completed:</strong> <span id="workDescription"></span></p>
+    </div>
+
+    <!-- Bill Summary Section -->
+    <div class="bill-summary">
+        <h3>Summary</h3>
+        <p><strong>Total Amount:</strong> $<span id="totalAmount"></span></p>
+        <p><strong>Status:</strong> <span id="status"></span></p>
+        <p><strong>Payment Due:</strong> <span id="paymentDue"></span></p>
+    </div>
+
+    <!-- Payment Options -->
+    <div id="paymentSection" class="button-group">
+        <button id="payBill">Pay Bill</button>
+        <button id="disputeBill">Dispute Bill</button>
+    </div>
+
+    <!-- Dispute Section -->
+    <div id="disputeNote" style="display: none;">
+        <h3>Your Dispute</h3>
+        <p><strong>Reason:</strong> <span id="disputeReason"></span></p>
+    </div>
+
+    <!-- Respond to Dispute -->
+    <div id="respondToDisputeSection" style="display: none;">
+        <h3>Respond to Dispute</h3>
+        <textarea id="responseToDispute" placeholder="Add your response..."></textarea>
+        <button id="submitResponse">Submit Response</button>
+    </div>
+
+</div>
+
+<script>
+    // Fetch Bill Data from the API
+    async function fetchBillData(billId) {
+        const response = await fetch(`http://localhost:3000/api/bill/${billId}`);
+        const billData = await response.json();
+        
+        // Populate the bill data on the page
+        document.getElementById('clientName').innerText = `${billData.clientFirstName} ${billData.clientLastName}`;
+        document.getElementById('billId').innerText = billData.billId;
+        document.getElementById('orderId').innerText = billData.orderId;
+        document.getElementById('workDescription').innerText = billData.workDescription;
+        document.getElementById('totalAmount').innerText = billData.amount;
+        document.getElementById('status').innerText = billData.status;
+        document.getElementById('paymentDue').innerText = billData.paymentDue;
+
+        // Check if there is a dispute
+        if (billData.dispute) {
+            document.getElementById('disputeNote').style.display = 'block';
+            document.getElementById('disputeReason').innerText = billData.dispute.disputeNote;
+            document.getElementById('respondToDisputeSection').style.display = 'block';
+        }
+    }
+
+    // Event listener for disputing the bill
+    document.getElementById('disputeBill').addEventListener('click', function() {
+        const billId = document.getElementById('billId').innerText;
+        // Handle dispute logic (show dispute form, etc.)
+        fetch(`http://localhost:3000/api/bill/${billId}/dispute`, {
+            method: 'POST',
+            body: JSON.stringify({ disputeNote: 'The price is too high.' }), // Example dispute note
+            headers: { 'Content-Type': 'application/json' }
+        }).then(() => alert('Bill disputed.'));
+    });
+
+    // Event listener for responding to a dispute
+    document.getElementById('submitResponse').addEventListener('click', function() {
+        const billId = document.getElementById('billId').innerText;
+        const responseNote = document.getElementById('responseToDispute').value;
+        
+        fetch(`http://localhost:3000/api/bill/${billId}/respond`, {
+            method: 'POST',
+            body: JSON.stringify({ responseToDispute: responseNote }),
+            headers: { 'Content-Type': 'application/json' }
+        }).then(() => alert('Your response has been submitted.'));
+    });
+
+    // Get Bill ID from the URL or elsewhere
+    const billId = 1; // Example bill ID
+    fetchBillData(billId);
+</script>
+
+</body>
+</html>
