@@ -1,31 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db/db'); // Assuming db is your database connection
-const isLoggedIn = require('../middleware/isLoggedIn'); // Adjust the path if needed
 
-router.post('/create', isLoggedIn, async (req, res) => {
-    const { propertyAddress, squareFeet, proposedPrice, note } = req.body;
-    const id = req.session.user?.id;
-
-    if (!id) {
-        console.log('Client ID missing');
-        return res.status(401).json({ error: 'Client ID is missing. Please log in first.' });
-    }
-
-    try {
-        console.log('Inserting quote:', { id, propertyAddress, squareFeet, proposedPrice, note });
-
-        const query = 'INSERT INTO quotes (id, propertyAddress, squareFeet, proposedPrice, note) VALUES (?, ?, ?, ?, ?)';
-        const result = await db.query(query, [id, propertyAddress, squareFeet, proposedPrice, note]);
-
-        console.log('Quote insertion result:', result);  // Log the result to check if insertion was successful
-
-        res.status(200).json({ success: true, message: 'Quote submitted successfully' });
-    } catch (error) {
-        console.error('Error inserting quote:', error);  // Log the error to the server console
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
+router.use('/api/quoteRequest', require('./api/quoteRequest')); // Adjust this path if needed
 
 module.exports = router;

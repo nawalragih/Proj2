@@ -74,7 +74,7 @@
         <form id="quoteRequestForm">
             <div class="form-group">
                 <input type="text" id="propertyAddress" placeholder="Property Address" required>
-                <input type="number" id="squareFootage" placeholder="Square Footage" required>
+                <input type="number" id="squareFeet" placeholder="Square Footage" required>
                 <input type="text" id="proposedPrice" placeholder="Proposed Price" required>
                 <textarea id="note" placeholder="Note (optional)"></textarea>
             </div>
@@ -83,40 +83,49 @@
     </div>
 
     <script>
-        // Handle quote request submission
-        async function handleQuoteRequest() {
-    const quoteData = {
-        userId: localStorage.getItem('clientId'),
-        propertyAddress: document.getElementById('propertyAddress').value,
-        squareFootage: document.getElementById('squareFootage').value,
-        proposedPrice: document.getElementById('proposedPrice').value,
-        note: document.getElementById('note').value
-    };
+        document.addEventListener('DOMContentLoaded', () => {
+            async function handleQuoteRequest(event) {
+    event.preventDefault();
 
-    const response = await fetch('http://localhost:3000/quoteRequest', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(quoteData),
-        credentials: 'include'
-    });
+    const propertyAddress = document.getElementById('propertyAddress').value;
+    const squareFeet = document.getElementById('squareFeet').value;
+    const proposedPrice = document.getElementById('proposedPrice').value;
+    const note = document.getElementById('note').value;
 
-    if (response.ok) {
-        const data = await response.json();
-        alert('Quote request submitted successfully!');
-        console.log(data);
+    if (!propertyAddress || !squareFeet || !proposedPrice) {
+        alert('Please fill out all required fields.');
+        return;
+    }
 
-        // Redirect to the client dashboard
-        window.location.href = '/client_Dashboard.html';  // Adjust the URL to your dashboard page
-    } else {
-        const error = await response.json();
-        alert('Error submitting quote request: ' + error.message);
-        console.error(error);
+    try {
+        const response = await fetch('http://localhost:3000/api/quoteRequest/create', { // Correct the URL here
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ propertyAddress, squareFeet, proposedPrice, note }),
+            credentials: 'include' // Ensure cookies are sent with the request
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            alert('Quote request submitted successfully!');
+            window.location.href = '/client_Dashboard.html'; // Ensure the dashboard exists
+        } else {
+            const error = await response.json();
+            console.error('Error:', error);
+            alert('Error submitting quote request: ' + (error.message || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Request failed:', error);
+        alert('Failed to submit the quote request. Please try again later.');
     }
 }
 
-        document.getElementById('quoteRequestForm').addEventListener('submit', handleQuoteRequest);
+
+            // Attach the event listener
+            document.getElementById('quoteRequestForm').addEventListener('submit', handleQuoteRequest);
+        });
     </script>
 </body>
 </html>
