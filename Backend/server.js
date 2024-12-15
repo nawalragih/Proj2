@@ -55,7 +55,7 @@ app.use('/api/quoteNegotiation', quoteNegotiationRoutes);
 // Middleware to check if the client is logged in
 const isLoggedIn = (req, res, next) => {
     if (!req.session || !req.session.user) {
-        return res.status(401).json({ success: false, message: 'Unauthorized. Please log in.' });
+        return res.status(401).json({ message: 'Please log in' });
     }
     next();
 };

@@ -52,7 +52,7 @@ async function getClientByEmail(email) {
 
 // Expose the database functions and pool
 module.exports = {
-    pool,
+    pool,  // This is what you should be importing and using in your routes
     createQuote,
     getClientById,
     getClientByEmail,
