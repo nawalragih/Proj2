@@ -63,11 +63,11 @@ const isLoggedIn = (req, res, next) => {
 // Route for quote submission (uses the `isLoggedIn` middleware)
 app.post('/quotes', isLoggedIn, async (req, res) => {
     const { propertyAddress, squareFeet } = req.body;
-    const clientId = req.session.user.id;
+    const id = req.session.user.id;
 
-    const query = 'INSERT INTO quotes (clientId, propertyAddress, squareFeet) VALUES (?, ?, ?)';
+    const query = 'INSERT INTO quotes (id, propertyAddress, squareFeet) VALUES (?, ?, ?)';
     try {
-        const [result] = await pool.execute(query, [clientId, propertyAddress, squareFeet]);
+        const [result] = await pool.execute(query, [id, propertyAddress, squareFeet]);
         res.json({ success: true, message: 'Quote submitted successfully', quoteId: result.insertId });
     } catch (err) {
         console.error('Error submitting quote:', err);
@@ -79,7 +79,6 @@ app.post('/quotes', isLoggedIn, async (req, res) => {
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
 
-    // Change the query to use 'clients' instead of 'users'
     pool.execute('SELECT * FROM clients WHERE email = ?', [email])
         .then(([results]) => {
             const userFound = results[0];
@@ -87,7 +86,7 @@ app.post('/login', (req, res) => {
             if (userFound && password === userFound.password) { // Direct password comparison without hashing
                 // Store user in session
                 req.session.user = {
-                    id: userFound.clientId,  // Assuming 'clientId' is the primary key in 'clients'
+                    id: userFound.id,                    
                     email: userFound.email,
                     firstName: userFound.firstName,
                     lastName: userFound.lastName,
@@ -96,11 +95,17 @@ app.post('/login', (req, res) => {
                     phoneNumber: userFound.phoneNumber
                 };
 
-                // Send the clientId along with other user info to the frontend
+                // Send the id along with other user info to the frontend
                 res.status(200).json({
                     message: 'Login successful',
-                    user: userFound,
-                    clientId: userFound.clientId // Send clientId to the frontend
+                    user: {
+                        id: userFound.id,                         email: userFound.email,
+                        firstName: userFound.firstName,
+                        lastName: userFound.lastName,
+                        propertyAddress: userFound.propertyAddress,
+                        creditCardInfo: userFound.creditCardInfo,
+                        phoneNumber: userFound.phoneNumber
+                    }
                 });
             } else {
                 res.status(401).json({ message: 'Invalid credentials' });
@@ -111,6 +116,7 @@ app.post('/login', (req, res) => {
             res.status(500).json({ message: 'Database error' });
         });
 });
+
 
 // Example route: Get user details by email
 app.post('/get-user-by-email', (req, res) => {
@@ -169,6 +175,14 @@ app.get('/dashboard', (req, res) => {
         res.status(401).json({ message: 'Please log in' });
     }
 });
+// Simulate session check
+app.get('/session', (req, res) => {
+    if (req.session.user) {
+        res.json({ user: req.session.user });
+    } else {
+        res.status(401).json({ user: null });
+    }
+});
 
 // Serve static HTML pages
 app.get('/', (req, res) => {
@@ -181,6 +195,17 @@ app.get('/register', (req, res) => {
 
 app.get('/quoteRequest', (req, res) => {
     res.sendFile(path.join(__dirname, '../public/quoteRequest.html'));
+});
+
+// Logout API endpoint
+app.post('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error logging out' });
+        }
+        res.clearCookie('connect.sid');
+        res.status(200).json({ message: 'Logged out successfully' });
+    });
 });
 
 // Start the server

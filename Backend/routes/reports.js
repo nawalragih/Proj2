@@ -16,7 +16,7 @@ router.get('/big-clients', async (req, res) => {
             ) subquery
         );
     `;
-    const [rows] = await db.execute(query);
+    const [rows] = await db.pool.execute(query);
     res.json(rows);
 });
 
@@ -33,7 +33,7 @@ router.get('/difficult-clients', async (req, res) => {
             SELECT 1 FROM Orders o WHERE o.clientId = c.id
         );
     `;
-    const [rows] = await db.execute(query);
+    const [rows] = await db.pool.execute(query);
     res.json(rows);
 });
 
@@ -46,7 +46,7 @@ router.get('/this-month-quotes', async (req, res) => {
         AND MONTH(q.createdAt) = MONTH(CURRENT_DATE())
         AND YEAR(q.createdAt) = YEAR(CURRENT_DATE());
     `;
-    const [rows] = await db.execute(query);
+    const [rows] = await db.pool.execute(query);
     res.json(rows);
 });
 
@@ -58,7 +58,7 @@ router.get('/prospective-clients', async (req, res) => {
         LEFT JOIN Quotes q ON c.id = q.clientId
         WHERE q.id IS NULL;
     `;
-    const [rows] = await db.execute(query);
+    const [rows] = await db.pool.execute(query);
     res.json(rows);
 });
 
@@ -71,7 +71,7 @@ router.get('/largest-driveway', async (req, res) => {
             SELECT MAX(squareFeet) FROM Quotes
         );
     `;
-    const [rows] = await db.execute(query);
+    const [rows] = await db.pool.execute(query);
     res.json(rows);
 });
 
@@ -83,7 +83,7 @@ router.get('/overdue-bills', async (req, res) => {
         WHERE b.status = 'UNPAID'
         AND DATEDIFF(CURRENT_DATE(), b.generatedAt) > 7;
     `;
-    const [rows] = await db.execute(query);
+    const [rows] = await db.pool.execute(query);
     res.json(rows);
 });
 
@@ -96,7 +96,7 @@ router.get('/bad-clients', async (req, res) => {
         WHERE b.status = 'UNPAID'
         AND DATEDIFF(CURRENT_DATE(), b.generatedAt) > 7;
     `;
-    const [rows] = await db.execute(query);
+    const [rows] = await db.pool.execute(query);
     res.json(rows);
 });
 
@@ -109,7 +109,7 @@ router.get('/good-clients', async (req, res) => {
         WHERE b.status = 'PAID'
         AND TIMESTAMPDIFF(HOUR, b.generatedAt, CURRENT_TIMESTAMP) <= 24;
     `;
-    const [rows] = await db.execute(query);
+    const [rows] = await db.pool.execute(query);
     res.json(rows);
 });
 

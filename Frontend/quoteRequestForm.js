@@ -1,9 +1,14 @@
-// Frontend - quoteRequest.js
 document.getElementById('quoteRequestForm').addEventListener('submit', async function (event) {
     event.preventDefault();  // Prevent form from submitting normally
 
+    const id = sessionStorage.getItem('id');  // Retrieve id from sessionStorage
+    if (!id) {
+        alert('Client ID is missing. Please log in first.');
+        return;
+    }
+
     const formData = new FormData();
-    formData.append('clientId', document.getElementById('clientId').value);
+    formData.append('id', id);  // Add id to formData
     formData.append('propertyAddress', document.getElementById('propertyAddress').value);
     formData.append('squareFeet', document.getElementById('squareFeet').value);
     formData.append('proposedPrice', document.getElementById('proposedPrice').value);
@@ -34,9 +39,6 @@ document.getElementById('quoteRequestForm').addEventListener('submit', async fun
         }
 
         const responseData = await response.json();
-
-        // Store the clientId in sessionStorage
-        sessionStorage.setItem('clientId', responseData.clientId);
 
         alert('Quote request submitted successfully!');
         window.location.href = 'clientDashboard.html';  // Redirect to the client dashboard

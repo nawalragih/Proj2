@@ -93,12 +93,12 @@
         document.getElementById('quoteRequestForm').addEventListener('submit', async function (event) {
     event.preventDefault();
 
-    // Retrieve clientId from sessionStorage
-    const clientId = sessionStorage.getItem('clientId');
-    console.log('clientId from sessionStorage:', clientId); // Debugging
+    // Retrieve id from sessionStorage
+    const id = sessionStorage.getItem('id');
+    console.log('id from sessionStorage:', id); // Debugging
 
-    // If clientId is not available, redirect to login
-    if (!clientId) {
+    // If id is not available, redirect to login
+    if (!id) {
         alert('Client ID is missing. Please log in first.');
         window.location.href = 'login.html'; // Redirect to login page
         return;
@@ -106,7 +106,7 @@
 
     // Collect form data
     const formData = {
-        clientId, // Use clientId from sessionStorage
+        id, // Use id from sessionStorage
         propertyAddress: document.getElementById('propertyAddress').value,
         squareFeet: document.getElementById('squareFeet').value,
         proposedPrice: document.getElementById('proposedPrice').value,

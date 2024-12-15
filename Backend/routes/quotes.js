@@ -1,11 +1,11 @@
 const express = require('express');
-const router = express.Router(); // Define the router
+const router = express.Router(); 
 const db = require('../db/db');
 
 // GET route to fetch all quotes
 router.get('/', async (req, res) => {
     try {
-        const [rows] = await db.query("SELECT * FROM Quotes");
+        const [rows] = await db.pool.execute("SELECT * FROM Quotes");
         res.status(200).json(rows);
     } catch (error) {
         console.error('Error fetching quotes:', error);
@@ -17,16 +17,14 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
     const { clientId, propertyAddress, squareFeet, proposedPrice, status, dateRequested } = req.body;
 
-    // Validate input
-    if (!clientId || !propertyAddress|| !squareFeet || !status) {
+    if (!clientId || !propertyAddress || !squareFeet || !status) {
         return res.status(400).json({ error: 'Missing required fields: clientId, address, squareFeet, and status' });
     }
 
     try {
-        // Insert the new quote into the database
-        await db.query(
+        await db.pool.execute(
             'INSERT INTO Quotes (clientId, propertyAddress, squareFeet, proposedPrice, status, dateRequested) VALUES (?, ?, ?, ?, ?, ?)',
-            [clientId, propertyAddress, squareFeet, proposedPrice || null, status, dateRequested || null] // Optional fields handled
+            [clientId, propertyAddress, squareFeet, proposedPrice || null, status, dateRequested || null]
         );
         res.status(201).json({ message: 'Quote submitted successfully' });
     } catch (error) {
@@ -35,5 +33,4 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Export the router
 module.exports = router;

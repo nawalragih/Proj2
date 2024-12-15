@@ -8,10 +8,10 @@
 </head>
 <body>
     <header>
-        <h1>Welcome Client!</h1> 
+        <h1>Welcome <span id="client-name"></span>!</h1> <!-- Display user name here -->
         <nav>
             <button onclick="showClientDashboard()">Client Dashboard</button>
-            <a href="/">Logout</a>
+            <a href="/" onclick="logout()">Logout</a>
         </nav>
     </header>
 
@@ -30,11 +30,40 @@
     </main>
 
     <script>
+        // Check if the user is logged in by checking the session
+        async function checkLogin() {
+        try {
+            const response = await fetch('/session'); // Endpoint to check session
+            const sessionData = await response.json();
+
+            if (sessionData.user) {
+                // If the user is logged in, show user info and client dashboard
+                document.getElementById('client-name').textContent = `${sessionData.user.firstName} ${sessionData.user.lastName}`;
+                showClientDashboard();
+            } else {
+                // If the user is not logged in, redirect to login page
+                window.location.href = '/login';
+            }
+        } catch (error) {
+            console.error('Error checking login status:', error);
+            window.location.href = '/login'; // In case of error, redirect to login
+        }
+    }
+
         // Show Client Dashboard
         function showClientDashboard() {
             document.getElementById('client-dashboard').style.display = 'block';
-            document.getElementById('david-dashboard').style.display = 'none';
         }
+
+        // Logout function to destroy the session
+        function logout() {
+            fetch('/logout', {
+                method: 'POST',
+            }).then(() => {
+                window.location.href = '/login'; // Redirect to login page after logout
+            });
+        }
+
         // Load client quotes
         async function loadClientQuotes() {
             const contentDiv = document.getElementById('client-content');
@@ -47,7 +76,7 @@
                     .map(q => `
                         <div>
                             <p><strong>Quote ID:</strong> ${q.id}</p>
-                            <p><strong>propertyAddress:</strong> ${q.propertyAddress}</p>
+                            <p><strong>Property Address:</strong> ${q.propertyAddress}</p>
                             <p><strong>Status:</strong> ${q.status}</p>
                         </div>
                     `)
@@ -105,11 +134,9 @@
         function redirectToQuoteRequest() {
             window.location.href = '/quoteRequest'; // Replace with the correct path
         }
+
+        // Call checkLogin on page load to verify if the user is logged in
+        window.onload = checkLogin;
     </script>
 </body>
 </html>
-
-
-
-
-

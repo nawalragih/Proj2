@@ -3,7 +3,7 @@ const session = require('express-session');
 const router = express.Router();
 const mysql = require('mysql2');
 
-
+// Create a connection pool with promise-based queries
 const db = mysql.createPool({
     host: 'localhost',
     user: 'root',
@@ -11,6 +11,8 @@ const db = mysql.createPool({
     database: 'driveway_management',
 });
 
+// Use promise-based queries from the pool
+const pool = db.promise(); // This allows you to use query as a promise
 
 // Session middleware
 router.use(
@@ -24,31 +26,37 @@ router.use(
 
 // POST route for client registration
 router.post('/register', async (req, res) => {
-    const { firstName, lastName, propertyAddress, creditCardInfo, phoneNumber, email, password } = req.body;
-    
+    const { firstName, lastName, email, phoneNumber, propertyAddress, creditCardInfo, password } = req.body;
+
+    // Input validation
+    if (!firstName || !lastName || !email || !phoneNumber || !propertyAddress || !creditCardInfo || !password) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+
     try {
-        // Check if the email is already taken
-        const [existingClient] = await db.execute('SELECT * FROM Clients WHERE email = ?', [email]);
+        // Check if the client already exists using promise-based query
+        const [existingClient] = await pool.execute('SELECT * FROM Clients WHERE email = ?', [email]);
+
+        // If the client already exists, return an error
         if (existingClient.length > 0) {
-            return res.status(400).json({ message: 'Email already registered' });
+            return res.status(400).json({ error: 'Client with this email already exists' });
         }
 
-        // Insert new client into the database
-        const query = `
-            INSERT INTO Clients (firstName, lastName, propertyAddress, creditCardInfo, phoneNumber, email, password)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        `;
-        const [result] = await db.execute(query, [firstName, lastName, propertyAddress, creditCardInfo, phoneNumber, email, password]);
+        // Insert the new client into the database using promise-based query
+        await pool.execute(
+            'INSERT INTO Clients (firstName, lastName, email, phoneNumber, propertyAddress, creditCardInfo, password) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [firstName, lastName, email, phoneNumber, propertyAddress, creditCardInfo, password]
+        );
 
+        // Return success message
         res.status(201).json({ message: 'Client registered successfully' });
-    } catch (err) {
-        console.error('Error registering client:', err);
-        res.status(500).json({ message: 'Internal server error' });
+    } catch (error) {
+        console.error('Error registering client:', error);
+        res.status(500).json({ error: 'Failed to register client' });
     }
 });
 
-
-// POST route for client registration
+// POST route for client login
 router.post('/login', (req, res) => {
     const { email, password } = req.body;
   
@@ -70,9 +78,24 @@ router.post('/login', (req, res) => {
         return res.status(401).json({ message: 'Invalid credentials' });
       }
     });
-  });
+});
 
+router.get('/session', (req, res) => {
+    if (req.session.user) {
+        res.json({ user: req.session.user });
+    } else {
+        res.json({ user: null });
+    }
+});
 
-console.log(db);
+// Route for logging out and destroying the session
+router.post('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).json({ error: 'Failed to log out' });
+        }
+        res.redirect('/login');
+    });
+});
 
 module.exports = router;

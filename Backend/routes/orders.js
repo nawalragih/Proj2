@@ -5,7 +5,7 @@ const db = require('../db/db');
 // Get all orders
 router.get('/', async (req, res) => {
     try {
-        const [rows] = await db.query("SELECT * FROM orders");
+        const [rows] = await db.pool.execute("SELECT * FROM orders");
         res.status(200).json(rows);
     } catch (error) {
         console.error('Error fetching orders:', error);
@@ -20,7 +20,7 @@ router.post('/', async (req, res) => {
         return res.status(400).json({ error: 'Missing required fields: clientId, quoteId, serviceDate' });
     }
     try {
-        await db.query(
+        await db.pool.execute(
             "INSERT INTO orders (clientId, quoteId, serviceDate) VALUES (?, ?, ?)",
             [clientId, quoteId, serviceDate]
         );
@@ -31,7 +31,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Update an order (e.g., change service date)
+// Update an order
 router.put('/:id', async (req, res) => {
     const { serviceDate } = req.body;
     const { id } = req.params;
@@ -41,7 +41,7 @@ router.put('/:id', async (req, res) => {
     }
 
     try {
-        const [result] = await db.query("UPDATE orders SET serviceDate = ? WHERE id = ?", [serviceDate, id]);
+        const [result] = await db.pool.execute("UPDATE orders SET serviceDate = ? WHERE id = ?", [serviceDate, id]);
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: 'Order not found' });
         }
@@ -57,7 +57,7 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
-        const [result] = await db.query("DELETE FROM orders WHERE id = ?", [id]);
+        const [result] = await db.pool.execute("DELETE FROM orders WHERE id = ?", [id]);
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: 'Order not found' });
         }

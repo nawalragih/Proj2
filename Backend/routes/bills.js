@@ -5,7 +5,7 @@ const db = require('../db/db');
 // Get all bills
 router.get('/', async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT * FROM bills');
+        const [rows] = await db.pool.execute('SELECT * FROM bills');
         res.json(rows);
     } catch (error) {
         console.error(error);
@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
     const { orderId, amount, dateIssued } = req.body;
     try {
-        await db.query(
+        await db.pool.execute(
             'INSERT INTO bills (orderId, amount, dateIssued) VALUES (?, ?, ?)',
             [orderId, amount, dateIssued]
         );
@@ -28,12 +28,12 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Update a bill (e.g., update amount)
+// Update a bill
 router.put('/:id', async (req, res) => {
     const { amount } = req.body;
     const { id } = req.params;
     try {
-        await db.query('UPDATE bills SET amount = ? WHERE id = ?', [amount, id]);
+        await db.pool.execute('UPDATE bills SET amount = ? WHERE id = ?', [amount, id]);
         res.json({ message: 'Bill updated successfully' });
     } catch (error) {
         console.error(error);
@@ -45,7 +45,7 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        await db.query('DELETE FROM bills WHERE id = ?', [id]);
+        await db.pool.execute('DELETE FROM bills WHERE id = ?', [id]);
         res.json({ message: 'Bill deleted successfully' });
     } catch (error) {
         console.error(error);
