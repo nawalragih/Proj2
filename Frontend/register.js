@@ -1,30 +1,28 @@
-document.getElementById('registrationForm').addEventListener('submit', function (e) {
-    e.preventDefault(); // Prevent form from refreshing the page
+document.getElementById('registerForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
 
-    // Get values from the form
-    const clientData = {
+    const formData = {
         firstName: document.getElementById('firstName').value,
         lastName: document.getElementById('lastName').value,
-        address: document.getElementById('address').value,
-        creditCardInfo: document.getElementById('creditCard').value, // Secure this in production
+        propertyAddress: document.getElementById('propertyAddress').value,
+        creditCardInfo: document.getElementById('creditCardInfo').value,
         phoneNumber: document.getElementById('phoneNumber').value,
-        email: document.getElementById('email').value
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value,
     };
 
-    // Send the data to the server
-    fetch('http://localhost:3000/clients/register', {
+    const response = await fetch('http://localhost:3000/clients/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(clientData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Client registered:', data);
-        // Optionally redirect to a success page or show a message
-    })
-    .catch(error => {
-        console.error('Error registering client:', error);
+        body: JSON.stringify(formData)
     });
+
+    const data = await response.json();
+    if (data.message) {
+        alert('Client registered successfully');
+    } else {
+        alert('Error registering client');
+    }
 });

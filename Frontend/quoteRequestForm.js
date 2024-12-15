@@ -11,6 +11,11 @@ document.getElementById('quoteRequestForm').addEventListener('submit', async fun
 
     // Handle image uploads
     const images = document.getElementById('images').files;
+    if (images.length === 0) {
+        alert('Please upload at least one image.');
+        return;
+    }
+
     for (let i = 0; i < images.length; i++) {
         formData.append('images', images[i]);
     }
@@ -28,7 +33,11 @@ document.getElementById('quoteRequestForm').addEventListener('submit', async fun
             return;
         }
 
-        const data = await response.json();
+        const responseData = await response.json();
+
+        // Store the clientId in sessionStorage
+        sessionStorage.setItem('clientId', responseData.clientId);
+
         alert('Quote request submitted successfully!');
         window.location.href = 'clientDashboard.html';  // Redirect to the client dashboard
     } catch (error) {

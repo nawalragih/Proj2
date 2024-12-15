@@ -1,3 +1,4 @@
+// Load quotes for the client dashboard
 async function loadClientQuotes() {
     try {
         const response = await fetch('/quotes');
@@ -14,10 +15,11 @@ async function loadClientQuotes() {
     }
 }
 
+// Submit a quote for a client
 async function submitQuote() {
     try {
         const clientId = prompt('Enter your client ID');
-        const propertyAddress = prompt('Enter property propertyAddress');
+        const propertyAddress = prompt('Enter property address');
         const squareFeet = prompt('Enter driveway size in square feet');
 
         const response = await fetch('/quotes', {
@@ -39,7 +41,7 @@ async function submitQuote() {
     }
 }
 
-// Dynamically load dashboards
+// Dynamically load client dashboard
 function openClientDashboard() {
     const contentDiv = document.getElementById('content');
     contentDiv.innerHTML = `
@@ -49,8 +51,8 @@ function openClientDashboard() {
     `;
 }
 
+// Dynamically load David's dashboard
 function openDavidDashboard() {
     const contentDiv = document.getElementById('content');
     contentDiv.innerHTML = '<h2>David\'s Dashboard</h2><p>Feature coming soon...</p>';
 }
-

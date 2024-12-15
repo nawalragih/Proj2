@@ -6,7 +6,7 @@ const isLoggedIn = require('../middleware/isLoggedIn'); // Adjust the path if ne
 // Your routes here
 router.post('/create', isLoggedIn, async (req, res) => {
     const { propertyAddress, squareFeet } = req.body;
-    const clientId = req.session.clientId;
+    const clientId = req.session.user?.id; // Fix clientId fetching
 
     if (!clientId) {
         return res.status(401).json({ error: 'Client ID is missing. Please log in first.' });
@@ -22,5 +22,6 @@ router.post('/create', isLoggedIn, async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
 
 module.exports = router;
