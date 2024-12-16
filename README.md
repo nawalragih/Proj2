@@ -82,6 +82,12 @@ Order Acceptance: Once accepted, both the client and the worker receive a bill f
 - Ensure proper handling of the .then(), .catch(), or await on the result of queries to prevent programming errors.
 - Ensure that all necessary fields are properly linked between the clients, bills, orders, and quotes tables.
 
+## Hours worked on project:
+- Week 1: 15 hours
+- Week 2: 28 hours
+- Week 3: 33 hours
+- Week 4: 35 hours 
+
 ## Project Members:
 - Nawal Ragih hi0091
 - Duaa Saeed he6041
