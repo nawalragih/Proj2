@@ -1,0 +1,78 @@
+CREATE DATABASE driveway_management;
+
+USE driveway_management;
+
+CREATE TABLE Clients (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    firstName VARCHAR(50) NOT NULL,
+    lastName VARCHAR(50) NOT NULL,
+    address TEXT NOT NULL,
+    creditCardInfo VARCHAR(100) NOT NULL,
+    phoneNumber VARCHAR(15) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    registrationDate DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Quotes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    clientId INT NOT NULL,
+    propertyAddress TEXT NOT NULL,
+    squareFeet INT NOT NULL,
+    acceptedPrice DECIMAL(10, 2) NOT NULL,
+    status ENUM('PENDING', 'ACCEPTED', 'REJECTED', 'NEGOTIATING') NOT NULL,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+);
+
+CREATE TABLE Orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    quoteId INT NOT NULL,
+    clientId INT NOT NULL,
+    serviceDate DATE NOT NULL,
+    status ENUM('COMPLETED', 'PENDING') NOT NULL,
+);
+
+CREATE TABLE Bills (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    orderId INT NOT NULL,
+    clientId INT NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    status ENUM('PAID', 'UNPAID') NOT NULL,
+    generatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+);
+
+INSERT INTO `clients` (`id`, `firstName`, `lastName`, `propertyAddress`, `creditCardInfo`, `phoneNumber`, `email`, `registrationDate`, `password`)
+VALUES
+    (NULL, 'Adam', 'Smith', '123 Firestone Dr', '4111111111111111', '123-456-7890', 'adam.smith@example.com', '2024-12-14 13:35:06', ''),
+    (NULL, 'John', 'Doe', '456 Maple Blvd', '4222222222222222', '234-567-8901', 'john.doe@example.com', '2024-12-14 13:35:06', ''),
+    (NULL, 'Nawal', 'Ragih', '789 Jerome St', '4333333333333333', '345-678-9012', 'nawal.ragih@example.com', '2024-12-14 13:35:06', '123'),
+    (NULL, 'Duaa', 'Saeed', '101 Oak Ln', '4444444444444444', '456-789-0123', 'dua.saeed@example.com', '2024-12-14 13:35:06', ''),
+    (NULL, 'Amelia', 'Clark', '202 Pine Ave', '4555555555555555', '567-890-1234', 'amelia.clark@example.com', '2024-12-14 13:35:06', ''),
+    (NULL, 'joe', 'm', '834 jole st', '1222222222222222', '3132589439', 'joe@gmail.com', '2024-12-14 14:13:43', '123');
+
+INSERT INTO `quotes` (`id`, `clientId`, `propertyAddress`, `squareFeet`, `proposedPrice`, `status`, `createdAt`, `note`)
+VALUES
+    (NULL, '1', '123 Firestone Dr', '1000', '1500.00', 'PENDING', '2024-12-14 13:41:35','Need fixed asap'),
+    (NULL, '4', '202 Birchwood Ln', '800', '1200.00', 'NEGOTIATING', '2024-12-14 13:41:35',NULL),
+    (NULL, '5', '301 Elm St', '2500', '4000.00', 'ACCEPTED', '2024-12-14 13:41:35',  NULL),
+    (NULL, '2', '456 Maple Blvd', '2000', '3000.00', 'ACCEPTED', '2024-12-14 13:41:35',  NULL),
+    (NULL, '3', '789 Jerome St', '1200', '1800.00', 'REJECTED', '2024-12-14 13:41:35', NULL),
+    (NULL, '2', 'Cedar Blvd', '750', '1900.00', 'NEGOTIATING', '2024-12-14 13:41:35', 'Need fixed asap'),
+    (NULL, '2', 'Pine Ave', '700', '1800.00', 'NEGOTIATING', '2024-12-14 13:41:35', NULL),
+    (NULL, '2', 'Willow St', '800', '2000.00', 'NEGOTIATING', '2024-12-14 13:41:35', NULL);
+
+INSERT INTO `bills` (`id`, `orderId`, `clientId`, `amount`, `status`, `generatedAt`)
+VALUES
+    (NULL, '1', '2', '3000.00', 'PAID', '2024-12-14 13:43:43'),
+    (NULL, '2', '5', '4000.00', 'UNPAID', '2024-12-14 13:43:43'),
+    (NULL, '1', '1', '1500.00', 'UNPAID', '2024-12-14 13:43:43'),
+    (NULL, '2', '3', '1800.00', 'UNPAID', '2024-12-14 13:43:43'),
+    (NULL, '1', '2', '3000.00', 'PAID', '2024-12-14 13:43:43'),
+    (NULL, '2', '5', '4000.00', 'UNPAID', '2024-12-14 13:43:43'),
+    (NULL, '1', '1', '1500.00', 'UNPAID', '2024-12-14 13:43:43'),
+    (NULL, '2', '3', '1800.00', 'UNPAID', '2024-12-14 13:43:43');
+
+INSERT INTO `orders` (`id`, `quoteId`, `clientId`, `serviceDate`, `status`)
+VALUES
+    (NULL, '2', '2', '2024-12-05', 'COMPLETED'),
+    (NULL, '5', '5', '2024-12-07', 'PENDING');
+
