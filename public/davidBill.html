@@ -4,83 +4,121 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bill Details</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Optional: Add your CSS file -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: left;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .bill-details p {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        .bill-details p strong {
+            color: #333;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #finalize-button {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        #finalize-button:hover {
+            background-color: #0056b3;
+        }
+
+        #cancel-button {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        #cancel-button:hover {
+            background-color: #c82333;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>David's Driveway Sealing Service</h1>
-    </header>
+    <div class="container">
+        <h1>Bill Details</h1>
+        <div class="bill-details">
+            <p><strong>Quote ID:</strong> <span id="quote-id">12345</span></p>
+            <p><strong>Client ID:</strong> <span id="client-id">67890</span></p>
+            <p><strong>Property Address:</strong> <span id="property-address">123 Main St, Anytown</span></p>
+            <p><strong>Square Feet:</strong> <span id="square-feet">2000 sq ft</span></p>
+            <p><strong>Accepted Price:</strong> <span id="accepted-price">$1500</span></p>
+        </div>
 
-    <main>
-        <section class="bill-details">
-            <h1>Bill Details</h1>
-            <p><strong>Quote ID:</strong> <span id="quote-id">Loading...</span></p>
-            <p><strong>Client ID:</strong> <span id="client-id">Loading...</span></p>
-            <p><strong>Property Address:</strong> <span id="property-address">Loading...</span></p>
-            <p><strong>Square Feet:</strong> <span id="square-feet">Loading...</span></p>
-            <p><strong>Accepted Price:</strong> <span id="accepted-price">Loading...</span></p>
-        </section>
-
-        <section class="actions">
+        <div class="actions">
             <button id="finalize-button">Finalize Bill</button>
             <button id="cancel-button">Cancel</button>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2024 David's Driveway Sealing Service. All rights reserved.</p>
-    </footer>
+        </div>
+    </div>
 
     <script>
-        // Function to fetch quote details from the API
-        async function fetchQuoteDetails(quoteId) {
-        try {
-            const response = await fetch(`http://localhost:3000/api/quoteRequest/${quoteId}`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('Failed to fetch quote details:', error);
-            alert('Error fetching quote details. Please try again later.');
+        // Function to populate the bill details with fake data
+        function populateBillDetails() {
+            document.getElementById('quote-id').innerText = '12345';
+            document.getElementById('client-id').innerText = '67890';
+            document.getElementById('property-address').innerText = '123 Main St, Anytown';
+            document.getElementById('square-feet').innerText = '2000 sq ft';
+            document.getElementById('accepted-price').innerText = '$1500';
         }
-    }
 
-    // Function to populate the bill details on the page
-    function populateBillDetails() {
-        const params = new URLSearchParams(window.location.search);
-        const quoteId = params.get('id');
+        // Add event listeners for buttons
+        function addEventListeners() {
+            document.getElementById('finalize-button').addEventListener('click', () => {
+                alert('Bill finalized!');
+                // Additional functionality for saving finalized bills can be added here
+            });
 
-        fetchQuoteDetails(quoteId).then((quote) => {
-            if (quote) {
-                document.getElementById('quote-id').innerText = quote.id;
-                document.getElementById('client-id').innerText = quote.clientId;
-                document.getElementById('property-address').innerText = quote.propertyAddress;
-                document.getElementById('square-feet').innerText = quote.squareFeet;
-                document.getElementById('accepted-price').innerText = `$${quote.acceptedPrice}`;
-            } else {
-                alert('Quote not found.');
-            }
-        });
-    }
+            document.getElementById('cancel-button').addEventListener('click', () => {
+                window.history.back(); // Redirect back to the previous page
+            });
+        }
 
-    // Add event listeners for buttons
-    function addEventListeners() {
-        document.getElementById('finalize-button').addEventListener('click', () => {
-            alert('Bill finalized!');
-            // Additional functionality for saving finalized bills can be added here
-        });
-
-        document.getElementById('cancel-button').addEventListener('click', () => {
-            window.history.back(); // Redirect back to the previous page
-        });
-    }
-
-    // Initialize the page on load
-    window.onload = function () {
-        populateBillDetails();
-        addEventListeners();
-    };
-</script>
+        // Initialize the page on load
+        window.onload = function () {
+            populateBillDetails();
+            addEventListeners();
+        };
+    </script>
 </body>
 </html>

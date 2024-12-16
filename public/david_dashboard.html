@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -63,10 +63,25 @@
         button:hover {
             background-color: #45a049;
         }
+        .logout-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #ff4c4c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .logout-button:hover {
+            background-color: #ff5959;
+        }
     </style>
 </head>
 <body>
     <h1>David's Dashboard</h1>
+    <button class="logout-button" onclick="logout()">Logout</button>
     <div id="quotes-container">
         <!-- Quotes will be dynamically loaded here -->
     </div>
@@ -115,26 +130,25 @@
 
         // Handle accepting a quote
         async function acceptQuote(quoteId) {
-    try {
-        const response = await fetch(`/quotes/${quoteId}/accept`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-        });
+            try {
+                const response = await fetch(`/quotes/${quoteId}/accept`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                });
 
-        if (response.ok) {
-            const quote = await response.json(); // Assuming the API returns the quote details
-            alert('Quote accepted with the proposed price!');
-            // Redirect to davidBill.html with quote details
-            window.location.href = `davidBill.html?id=${quote.id}&price=${quote.price}&clientName=${encodeURIComponent(quote.clientName)}&clientEmail=${encodeURIComponent(quote.clientEmail)}`;
-        } else {
-            alert('Failed to accept the quote');
+                if (response.ok) {
+                    const quote = await response.json(); // Assuming the API returns the quote details
+                    alert('Quote accepted with the proposed price!');
+                    // Redirect to davidBill.html with quote details
+                    window.location.href = `davidBill.html?id=${quote.id}&price=${quote.price}&clientName=${encodeURIComponent(quote.clientName)}&clientEmail=${encodeURIComponent(quote.clientEmail)}`;
+                } else {
+                    alert('Failed to accept the quote');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error accepting quote');
+            }
         }
-    } catch (error) {
-        console.error(error);
-        alert('Error accepting quote');
-    }
-}
-
 
         // Handle rejecting a quote
         async function rejectQuote(quoteId) {
@@ -183,6 +197,12 @@
                 console.error(error);
                 alert('Error sending negotiation');
             }
+        }
+
+        // Handle logout
+        function logout() {
+            // Redirect to login page
+            window.location.href = '/login.html';
         }
 
         // Load the quotes when the page is loaded
