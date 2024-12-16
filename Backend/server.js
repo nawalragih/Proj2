@@ -10,7 +10,7 @@ const quotesRoutes = require('./routes/quotes');
 const ordersRoutes = require('./routes/orders');
 const billsRoutes = require('./routes/bills');
 const reportsRoutes = require('./routes/reports');
-const quoteRequestRoutes = require('./routes/quoteRequest');
+const quoteRequestRouter = require('./api/quoteRequest'); 
 const quoteReviewRoutes = require('./routes/quoteReview');
 const quoteNegotiationRoutes = require('./routes/clientNegotiation');
 
@@ -48,7 +48,7 @@ app.use('/quotes', quotesRoutes);
 app.use('/orders', ordersRoutes);
 app.use('/bills', billsRoutes);
 app.use('/reports', reportsRoutes);
-app.use('/api/quoteRequest', quoteRequestRoutes);
+app.use('/api/quoteRequest', quoteRequestRouter);
 app.use('/api/quoteReview', quoteReviewRoutes);
 app.use('/api/quoteNegotiation', quoteNegotiationRoutes);
 
