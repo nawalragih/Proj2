@@ -1,105 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>David's Dashboard</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+            }
+            h1 {
+                text-align: center;
+                margin-top: 20px;
+            }
+            #quotes-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin-top: 20px;
+                padding: 20px;
+            }
+            .quote {
+                background-color: white;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                margin: 10px;
+                padding: 20px;
+                width: 80%;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .quote h3 {
+                margin: 0;
+                font-size: 18px;
+                color: #333;
+            }
+            .quote p {
+                margin: 10px 0;
+                color: #555;
+            }
+            .negotiation-note {
+                margin-top: 10px;
+                font-style: italic;
+                color: #777;
+            }
+            .status {
+                font-weight: bold;
+            }
+            .buttons {
+                margin-top: 15px;
+            }
+            button {
+                padding: 8px 15px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                margin-right: 5px;
+            }
+            button:hover {
+                background-color: #45a049;
+            }
+        </style>
+    </head>
+    <body>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/style.css">
-    <title>Dashboard</title>
+    <title>David's Dashboard</title>
+    <style>
+        /* Add your previous styling here */
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Welcome David!</h1> 
-        <nav>
-            <button onclick="showDavidDashboard()">David's Dashboard</button>
-            <a href="/">Logout</a>
-        </nav>
-    </header>
-
-    <main>
-        <!-- David's Dashboard -->
-        <section id="david-dashboard" style="display: none;">
-            <h2>David Smith's Dashboard</h2>
-            <div>
-                <button onclick="loadIncomingQuotes()">Check Incoming Quotes</button>
-                <button onclick="loadWorkOrders()">Check Work Orders</button>
-                <button onclick="loadBills()">Check Bills</button>
-                <button onclick="generateRevenueReport()">Generate Revenue Report</button>
-            </div>
-            <div id="david-content" style="margin-top: 20px;"></div>
-        </section>
-    </main>
+    <h1>David's Dashboard</h1>
+    <div id="quotes-container">
+        <!-- Quotes will be dynamically loaded here -->
+    </div>
 
     <script>
-        // Show David's Dashboard
-        function showDavidDashboard() {
-            document.getElementById('david-dashboard').style.display = 'block';
+        // Fetch and display quotes (including negotiation notes) on David's dashboard
+        async function loadDavidQuotes() {
+            try {
+                const response = await fetch('/quotes'); // Fetch quotes from the backend
+                const quotes = await response.json();
+
+                // Clear the container before displaying updated quotes
+                const container = document.getElementById('quotes-container');
+                container.innerHTML = '';
+
+                // Loop through each quote and display it
+                quotes.forEach(quote => {
+    const quoteDiv = document.createElement('div');
+    quoteDiv.classList.add('quote');
+
+    const isAccepted = quote.status === 'ACCEPTED';
+
+    quoteDiv.innerHTML = `
+        <h3>Quote ID: ${quote.id}</h3>
+        <p class="status">Status: ${quote.status}</p>
+        <p>Price: $${quote.price}</p>
+        <p>Proposed Price: $${quote.proposedPrice || 'N/A'}</p>
+        <div class="negotiation-note">
+            <strong>Negotiation Note:</strong>
+            <p>${quote.note || 'No negotiation note yet.'}</p>
+        </div>
+        <div class="buttons">
+            <button onclick="acceptQuote(${quote.id})" ${isAccepted ? 'disabled' : ''}>Accept</button>
+            <button onclick="rejectQuote(${quote.id})" ${isAccepted ? 'disabled' : ''}>Reject</button>
+            <button onclick="negotiateQuote(${quote.id})" ${isAccepted ? 'disabled' : ''}>Negotiate</button>
+        </div>
+    `;
+
+    container.appendChild(quoteDiv);
+});
+
+            } catch (error) {
+                console.error('Error loading quotes:', error);
+            }
         }
 
-        // Load and display incoming quotes for David
-        async function loadIncomingQuotes() {
-    console.log('Loading incoming quotes...');  // Add this log to check if the function is called
-    const contentDiv = document.getElementById('david-content');
-    contentDiv.innerHTML = '<p>Loading incoming quotes...</p>';
-
+        // Handle accepting a quote
+       async function acceptQuote(quoteId) {
     try {
-        const response = await fetch('/quotes');
-        if (!response.ok) throw new Error('Failed to load quotes');
+        const response = await fetch(`/quotes/${quoteId}/accept`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+        });
 
-        const quotes = await response.json();
-        console.log('Loaded Quotes:', quotes);  // Add this log to check the loaded data
-
-        contentDiv.innerHTML = quotes
-            .map(q => `
-                <div>
-                    <p><strong>Quote ID:</strong> ${q.id}</p>
-                    <p><strong>Client ID:</strong> ${q.clientId}</p>
-                    <p><strong>Property Address:</strong> ${q.propertyAddress}</p>
-                    <p><strong>Square Feet:</strong> ${q.squareFeet}</p>
-                    <p><strong>Proposed Price:</strong> $${q.proposedPrice}</p>
-                    <p><strong>Status:</strong> ${q.status || 'Pending'}</p>
-                    <button onclick="acceptQuote(${q.id})">Accept</button>
-                    <button onclick="rejectQuote(${q.id})">Reject</button>
-                    <button onclick="negotiateQuote(${q.id})">Negotiate</button>
-                </div>
-                <hr>
-            `)
-            .join('');
+        if (response.ok) {
+            alert('Quote accepted with the proposed price!');
+            loadDavidQuotes(); // Reload the quotes after accepting
+        } else {
+            alert('Failed to accept the quote');
+        }
     } catch (error) {
-        contentDiv.innerHTML = '<p>Error loading quotes.</p>';
         console.error(error);
+        alert('Error accepting quote');
     }
 }
 
 
-        // Accept a quote
-        async function acceptQuote(quoteId) {
-            if (!confirm('Are you sure you want to accept this quote?')) return;
 
-            try {
-                const response = await fetch(`/quotes/${quoteId}/accept`, { method: 'PUT' });
-                if (response.ok) {
-                    alert('Quote accepted successfully!');
-                    loadIncomingQuotes(); // Reload quotes
-                } else {
-                    alert('Failed to accept quote');
-                }
-            } catch (error) {
-                console.error(error);
-                alert('Error accepting quote');
-            }
-        }
-
-        // Reject a quote
+        // Handle rejecting a quote
         async function rejectQuote(quoteId) {
-            if (!confirm('Are you sure you want to reject this quote?')) return;
-
             try {
-                const response = await fetch(`/quotes/${quoteId}/reject`, { method: 'PUT' });
+                const response = await fetch(`/quotes/${quoteId}/reject`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+
                 if (response.ok) {
-                    alert('Quote rejected successfully!');
-                    loadIncomingQuotes(); // Reload quotes
+                    alert('Quote rejected!');
+                    loadDavidQuotes(); // Reload the quotes after rejecting
                 } else {
-                    alert('Failed to reject quote');
+                    alert('Failed to reject the quote');
                 }
             } catch (error) {
                 console.error(error);
@@ -107,84 +165,37 @@
             }
         }
 
-        // Negotiate a quote
+        // Handle negotiation of a quote (with proposed amount)
         async function negotiateQuote(quoteId) {
-            const newProposedPrice = prompt('Enter your proposed price:');
-            if (!newProposedPrice) return;
+            const note = prompt('Enter your negotiation note for this quote:');
+            const proposedPrice = prompt('Enter your proposed price for this quote:');
+
+            if (!note || !proposedPrice) {
+                alert('Please enter both negotiation note and proposed price');
+                return;
+            }
 
             try {
                 const response = await fetch(`/quotes/${quoteId}/negotiate`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ proposedPrice: newProposedPrice }),
+                    body: JSON.stringify({ note, proposedPrice }), // Sending the note and proposed price from David
                 });
 
                 if (response.ok) {
-                    alert('Negotiation sent to client!');
-                    loadIncomingQuotes(); // Reload quotes
+                    alert('Negotiation sent to client with proposed price!');
+                    loadDavidQuotes(); // Reload the quotes after negotiating
                 } else {
-                    alert('Failed to negotiate quote');
+                    alert('Failed to send negotiation');
                 }
             } catch (error) {
                 console.error(error);
-                alert('Error negotiating quote');
+                alert('Error sending negotiation');
             }
         }
 
-        // Load and display work orders for David
-        async function loadWorkOrders() {
-            const contentDiv = document.getElementById('david-content');
-            contentDiv.innerHTML = '<p>Loading work orders...</p>';
-
-            try {
-                const response = await fetch('/orders');
-                const orders = await response.json();
-                contentDiv.innerHTML = orders
-                    .map(o => `
-                        <div>
-                            <p><strong>Order ID:</strong> ${o.id}</p>
-                            <p><strong>Client ID:</strong> ${o.clientId}</p>
-                            <p><strong>Status:</strong> ${o.status}</p>
-                            <p><strong>Content:</strong> ${o.content}</p>
-                        </div>
-                    `)
-                    .join('');
-            } catch (error) {
-                contentDiv.innerHTML = '<p>Error loading work orders.</p>';
-            }
-        }
-
-        // Load and display bills for David
-        async function loadBills() {
-            const contentDiv = document.getElementById('david-content');
-            contentDiv.innerHTML = '<p>Loading bills...</p>';
-
-            try {
-                const response = await fetch('/bills');
-                const bills = await response.json();
-                contentDiv.innerHTML = bills
-                    .map(b => `
-                        <div>
-                            <p><strong>Bill ID:</strong> ${b.id}</p>
-                            <p><strong>Client ID:</strong> ${b.clientId}</p>
-                            <p><strong>Amount:</strong> $${b.amount}</p>
-                            <p><strong>Status:</strong> ${b.status}</p>
-                        </div>
-                    `)
-                    .join('');
-            } catch (error) {
-                contentDiv.innerHTML = '<p>Error loading bills.</p>';
-            }
-        }
-
-        // Placeholder for generating revenue report
-        function generateRevenueReport() {
-            const contentDiv = document.getElementById('david-content');
-            const startDate = prompt('Enter start date (YYYY-MM-DD):');
-            const endDate = prompt('Enter end date (YYYY-MM-DD):');
-
-            contentDiv.innerHTML = `<p>Generating revenue report from ${startDate} to ${endDate}...</p>`;
-        }
+        // Load the quotes when the page is loaded
+        window.onload = loadDavidQuotes;
     </script>
 </body>
 </html>

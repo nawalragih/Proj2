@@ -50,6 +50,34 @@ function openClientDashboard() {
         <button onclick="submitQuote()">Submit a Quote</button>
     `;
 }
+// Handle client negotiation submission
+async function negotiateQuote(quoteId) {
+    const note = document.getElementById(`note-${quoteId}`).value;
+
+    if (!note) {
+        alert('Please enter a negotiation note');
+        return;
+    }
+
+    try {
+        const response = await fetch(`/quotes/${quoteId}/negotiate`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ note }), // Sending the note from the client
+        });
+
+        if (response.ok) {
+            alert('Negotiation sent to David successfully!');
+            loadClientQuotes(); // Reload the quotes after submitting negotiation
+        } else {
+            alert('Failed to send negotiation');
+        }
+    } catch (error) {
+        console.error(error);
+        alert('Error sending negotiation');
+    }
+}
+
 
 // Dynamically load David's dashboard
 function openDavidDashboard() {

@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/style.css">
-    <title>Dashboard</title>
+    <title>Client Dashboard</title>
 </head>
 <body>
     <header>
-        <h1>Welcome <span id="client-name"></span>!</h1> <!-- Display user name here -->
+        <h1>Welcome <span id="client-name"></span>!</h1>
         <nav>
             <button onclick="showClientDashboard()">Client Dashboard</button>
             <a href="/" onclick="logout()">Logout</a>
@@ -16,7 +16,6 @@
     </header>
 
     <main>
-        <!-- Client Dashboard -->
         <section id="client-dashboard" style="display: none;">
             <h2>Client Dashboard</h2>
             <div>
@@ -32,23 +31,21 @@
     <script>
         // Check if the user is logged in by checking the session
         async function checkLogin() {
-        try {
-            const response = await fetch('/session'); // Endpoint to check session
-            const sessionData = await response.json();
+            try {
+                const response = await fetch('/session'); // Endpoint to check session
+                const sessionData = await response.json();
 
-            if (sessionData.user) {
-                // If the user is logged in, show user info and client dashboard
-                document.getElementById('client-name').textContent = `${sessionData.user.firstName} ${sessionData.user.lastName}`;
-                showClientDashboard();
-            } else {
-                // If the user is not logged in, redirect to login page
-                window.location.href = '/login';
+                if (sessionData.user) {
+                    document.getElementById('client-name').textContent = `${sessionData.user.firstName} ${sessionData.user.lastName}`;
+                    showClientDashboard();
+                } else {
+                    window.location.href = '/login';
+                }
+            } catch (error) {
+                console.error('Error checking login status:', error);
+                window.location.href = '/login'; // In case of error, redirect to login
             }
-        } catch (error) {
-            console.error('Error checking login status:', error);
-            window.location.href = '/login'; // In case of error, redirect to login
         }
-    }
 
         // Show Client Dashboard
         function showClientDashboard() {
@@ -64,7 +61,7 @@
             });
         }
 
-        // Load client quotes
+        // Load client quotes with negotiation option
         async function loadClientQuotes() {
             const contentDiv = document.getElementById('client-content');
             contentDiv.innerHTML = '<p>Loading client quotes...</p>';
@@ -72,13 +69,22 @@
             try {
                 const response = await fetch('/quotes');
                 const quotes = await response.json();
+
                 contentDiv.innerHTML = quotes
                     .map(q => `
                         <div>
                             <p><strong>Quote ID:</strong> ${q.id}</p>
                             <p><strong>Property Address:</strong> ${q.propertyAddress}</p>
+                            <p><strong>Proposed Price:</strong> $${q.proposedPrice}</p>
                             <p><strong>Status:</strong> ${q.status}</p>
+                            <p><strong>Note:</strong> ${q.note || 'No note available'}</p>
+                            
+                            <!-- Allow client to negotiate back to David -->
+                            <textarea id="note-${q.id}" placeholder="Enter your negotiation note here"></textarea>
+                            <input id="price-${q.id}" type="number" placeholder="Enter your proposed price">
+                            <button onclick="negotiateQuote(${q.id})">Submit Negotiation</button>
                         </div>
+                        <hr>
                     `)
                     .join('');
             } catch (error) {
@@ -86,53 +92,38 @@
             }
         }
 
-        // Load client orders
-        async function loadClientOrders() {
-            const contentDiv = document.getElementById('client-content');
-            contentDiv.innerHTML = '<p>Loading client orders...</p>';
+        // Handle quote negotiation (Client sends note and price back to David)
+        async function negotiateQuote(quoteId) {
+            const note = document.getElementById(`note-${quoteId}`).value;
+            const proposedPrice = document.getElementById(`price-${quoteId}`).value;
 
-            try {
-                const response = await fetch('/orders');
-                const orders = await response.json();
-                contentDiv.innerHTML = orders
-                    .map(o => `
-                        <div>
-                            <p><strong>Order ID:</strong> ${o.id}</p>
-                            <p><strong>Status:</strong> ${o.status}</p>
-                            <p><strong>Content:</strong> ${o.content}</p>
-                        </div>
-                    `)
-                    .join('');
-            } catch (error) {
-                contentDiv.innerHTML = '<p>Error loading client orders.</p>';
+            if (!note || !proposedPrice) {
+                alert('Please enter both a negotiation note and a proposed price');
+                return;
             }
-        }
-
-        // Load client bills
-        async function loadClientBills() {
-            const contentDiv = document.getElementById('client-content');
-            contentDiv.innerHTML = '<p>Loading client bills...</p>';
 
             try {
-                const response = await fetch('/bills');
-                const bills = await response.json();
-                contentDiv.innerHTML = bills
-                    .map(b => `
-                        <div>
-                            <p><strong>Bill ID:</strong> ${b.id}</p>
-                            <p><strong>Amount:</strong> $${b.amount}</p>
-                            <p><strong>Status:</strong> ${b.status}</p>
-                        </div>
-                    `)
-                    .join('');
+                const response = await fetch(`/quotes/${quoteId}/negotiate`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ note, proposedPrice }), // Sending the note and proposed price
+                });
+
+                if (response.ok) {
+                    alert('Negotiation submitted successfully!');
+                    loadClientQuotes(); // Reload the quotes after submitting negotiation
+                } else {
+                    alert('Failed to submit negotiation');
+                }
             } catch (error) {
-                contentDiv.innerHTML = '<p>Error loading client bills.</p>';
+                console.error(error);
+                alert('Error submitting negotiation');
             }
         }
 
         // Redirect to quote request page
         function redirectToQuoteRequest() {
-            window.location.href = '/quoteRequest'; // Replace with the correct path
+            window.location.href = '/quoteRequest';
         }
 
         // Call checkLogin on page load to verify if the user is logged in
