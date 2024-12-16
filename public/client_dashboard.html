@@ -62,35 +62,58 @@
         }
 
         // Load client quotes with negotiation option
-        async function loadClientQuotes() {
-            const contentDiv = document.getElementById('client-content');
-            contentDiv.innerHTML = '<p>Loading client quotes...</p>';
+       
+async function loadClientOrders() {
+    const contentDiv = document.getElementById('client-content');
+    contentDiv.innerHTML = '<p>Loading client orders...</p>';
 
-            try {
-                const response = await fetch('/quotes');
-                const quotes = await response.json();
+    try {
+        const response = await fetch('/orders'); // Replace '/orders' with your actual API endpoint for fetching orders
+        const orders = await response.json();
 
-                contentDiv.innerHTML = quotes
-                    .map(q => `
-                        <div>
-                            <p><strong>Quote ID:</strong> ${q.id}</p>
-                            <p><strong>Property Address:</strong> ${q.propertyAddress}</p>
-                            <p><strong>Proposed Price:</strong> $${q.proposedPrice}</p>
-                            <p><strong>Status:</strong> ${q.status}</p>
-                            <p><strong>Note:</strong> ${q.note || 'No note available'}</p>
-                            
-                            <!-- Allow client to negotiate back to David -->
-                            <textarea id="note-${q.id}" placeholder="Enter your negotiation note here"></textarea>
-                            <input id="price-${q.id}" type="number" placeholder="Enter your proposed price">
-                            <button onclick="negotiateQuote(${q.id})">Submit Negotiation</button>
-                        </div>
-                        <hr>
-                    `)
-                    .join('');
-            } catch (error) {
-                contentDiv.innerHTML = '<p>Error loading client quotes.</p>';
-            }
-        }
+        contentDiv.innerHTML = orders
+            .map(o => `
+                <div>
+                    <p><strong>Order ID:</strong> ${o.id}</p>
+                    <p><strong>Service Date:</strong> ${o.serviceDate}</p>
+                    <p><strong>Property Address:</strong> ${o.propertyAddress}</p>
+                    <p><strong>Status:</strong> ${o.status}</p>
+                    <p><strong>Total Cost:</strong> $${o.totalCost}</p>
+                </div>
+                <hr>
+            `)
+            .join('');
+    } catch (error) {
+        contentDiv.innerHTML = '<p>Error loading client orders.</p>';
+        console.error('Error fetching client orders:', error);
+    }
+}
+
+
+async function loadClientBills() {
+    const contentDiv = document.getElementById('client-content');
+    contentDiv.innerHTML = '<p>Loading client bills...</p>';
+
+    try {
+        const response = await fetch('/bills'); // Replace '/bills' with your actual API endpoint for fetching bills
+        const bills = await response.json();
+
+        contentDiv.innerHTML = bills
+            .map(b => `
+                <div>
+                    <p><strong>Bill ID:</strong> ${b.id}</p>
+                    <p><strong>Due Date:</strong> ${b.dueDate}</p>
+                    <p><strong>Amount Due:</strong> $${b.amountDue}</p>
+                    <p><strong>Status:</strong> ${b.status}</p>
+                </div>
+                <hr>
+            `)
+            .join('');
+    } catch (error) {
+        contentDiv.innerHTML = '<p>Error loading client bills.</p>';
+        console.error('Error fetching client bills:', error);
+    }
+}
 
         // Handle quote negotiation (Client sends note and price back to David)
         async function negotiateQuote(quoteId) {
