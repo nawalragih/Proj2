@@ -50,10 +50,26 @@ async function getClientByEmail(email) {
     }
 }
 
+async function getQuoteFromDatabase(quoteId) {
+    try {
+        const [rows] = await pool.query(
+            `SELECT id, clientId, propertyAddress, squareFeet, acceptedPrice
+             FROM Quotes
+             WHERE id = ?`,
+            [quoteId]
+        );
+        return rows[0]; // Return the first row (should only be one row based on ID)
+    } catch (error) {
+        console.error('Database query failed:', error);
+        throw error;
+    }
+}
+
 // Expose the database functions and pool
 module.exports = {
     pool,  // This is what you should be importing and using in your routes
     createQuote,
     getClientById,
     getClientByEmail,
+    getQuoteFromDatabase,
 };

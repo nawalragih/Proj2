@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db/db');
 
-// Get all bills
+// Fetch all bills
 router.get('/', async (req, res) => {
     try {
         const [rows] = await db.pool.execute('SELECT * FROM bills');
@@ -13,9 +13,13 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Create a new bill
+// Add a new bill
 router.post('/', async (req, res) => {
     const { orderId, amount, dateIssued } = req.body;
+    if (!orderId || !amount || !dateIssued) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
+
     try {
         await db.pool.execute(
             'INSERT INTO bills (orderId, amount, dateIssued) VALUES (?, ?, ?)',
@@ -32,8 +36,16 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     const { amount } = req.body;
     const { id } = req.params;
+
+    if (!amount) {
+        return res.status(400).json({ error: 'Amount is required' });
+    }
+
     try {
-        await db.pool.execute('UPDATE bills SET amount = ? WHERE id = ?', [amount, id]);
+        const [result] = await db.pool.execute('UPDATE bills SET amount = ? WHERE id = ?', [amount, id]);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Bill not found' });
+        }
         res.json({ message: 'Bill updated successfully' });
     } catch (error) {
         console.error(error);
@@ -45,7 +57,10 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        await db.pool.execute('DELETE FROM bills WHERE id = ?', [id]);
+        const [result] = await db.pool.execute('DELETE FROM bills WHERE id = ?', [id]);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Bill not found' });
+        }
         res.json({ message: 'Bill deleted successfully' });
     } catch (error) {
         console.error(error);

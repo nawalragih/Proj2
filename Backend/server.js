@@ -3,6 +3,8 @@ const path = require('path');
 const cors = require('cors');
 const session = require('express-session');
 const app = express();
+const { getQuoteFromDatabase } = require('./db/db'); // Update the path as necessary
+
 
 // Import route handlers
 const clientRoutes = require('./routes/clients');
@@ -212,6 +214,21 @@ app.get('/session', (req, res) => {
         res.json({ user: req.session.user });
     } else {
         res.status(401).json({ user: null });
+    }
+});
+
+app.get('/api/quoteRequest/:id', async (req, res) => {
+    const quoteId = req.params.id;
+
+    try {
+        const quote = await getQuoteFromDatabase(quoteId);
+        if (quote) {
+            res.json(quote);
+        } else {
+            res.status(404).send({ error: 'Quote not found' });
+        }
+    } catch (error) {
+        res.status(500).send({ error: 'Internal Server Error' });
     }
 });
 

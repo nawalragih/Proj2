@@ -1,78 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>David's Dashboard</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f4f4f4;
-                margin: 0;
-                padding: 0;
-            }
-            h1 {
-                text-align: center;
-                margin-top: 20px;
-            }
-            #quotes-container {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                margin-top: 20px;
-                padding: 20px;
-            }
-            .quote {
-                background-color: white;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-                margin: 10px;
-                padding: 20px;
-                width: 80%;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            }
-            .quote h3 {
-                margin: 0;
-                font-size: 18px;
-                color: #333;
-            }
-            .quote p {
-                margin: 10px 0;
-                color: #555;
-            }
-            .negotiation-note {
-                margin-top: 10px;
-                font-style: italic;
-                color: #777;
-            }
-            .status {
-                font-weight: bold;
-            }
-            .buttons {
-                margin-top: 15px;
-            }
-            button {
-                padding: 8px 15px;
-                background-color: #4CAF50;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                margin-right: 5px;
-            }
-            button:hover {
-                background-color: #45a049;
-            }
-        </style>
-    </head>
-    <body>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>David's Dashboard</title>
     <style>
-        /* Add your previous styling here */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+        #quotes-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            padding: 20px;
+        }
+        .quote {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px;
+            padding: 20px;
+            width: 80%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .quote h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+        }
+        .quote p {
+            margin: 10px 0;
+            color: #555;
+        }
+        .negotiation-note {
+            margin-top: 10px;
+            font-style: italic;
+            color: #777;
+        }
+        .status {
+            font-weight: bold;
+        }
+        .buttons {
+            margin-top: 15px;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -86,6 +76,7 @@
         async function loadDavidQuotes() {
             try {
                 const response = await fetch('/quotes'); // Fetch quotes from the backend
+                if (!response.ok) throw new Error('Network response was not ok');
                 const quotes = await response.json();
 
                 // Clear the container before displaying updated quotes
@@ -94,37 +85,36 @@
 
                 // Loop through each quote and display it
                 quotes.forEach(quote => {
-    const quoteDiv = document.createElement('div');
-    quoteDiv.classList.add('quote');
+                    const quoteDiv = document.createElement('div');
+                    quoteDiv.classList.add('quote');
 
-    const isAccepted = quote.status === 'ACCEPTED';
+                    const isAccepted = quote.status === 'ACCEPTED';
 
-    quoteDiv.innerHTML = `
-        <h3>Quote ID: ${quote.id}</h3>
-        <p class="status">Status: ${quote.status}</p>
-        <p>Price: $${quote.price}</p>
-        <p>Proposed Price: $${quote.proposedPrice || 'N/A'}</p>
-        <div class="negotiation-note">
-            <strong>Negotiation Note:</strong>
-            <p>${quote.note || 'No negotiation note yet.'}</p>
-        </div>
-        <div class="buttons">
-            <button onclick="acceptQuote(${quote.id})" ${isAccepted ? 'disabled' : ''}>Accept</button>
-            <button onclick="rejectQuote(${quote.id})" ${isAccepted ? 'disabled' : ''}>Reject</button>
-            <button onclick="negotiateQuote(${quote.id})" ${isAccepted ? 'disabled' : ''}>Negotiate</button>
-        </div>
-    `;
+                    quoteDiv.innerHTML = `
+                        <h3>Quote ID: ${quote.id}</h3>
+                        <p class="status">Status: ${quote.status}</p>
+                        <p>Price: $${quote.price}</p>
+                        <p>Proposed Price: $${quote.proposedPrice || 'N/A'}</p>
+                        <div class="negotiation-note">
+                            <strong>Negotiation Note:</strong>
+                            <p>${quote.note || 'No negotiation note yet.'}</p>
+                        </div>
+                        <div class="buttons">
+                            <button onclick="acceptQuote(${quote.id})" ${isAccepted ? 'disabled' : ''}>Accept</button>
+                            <button onclick="rejectQuote(${quote.id})" ${isAccepted ? 'disabled' : ''}>Reject</button>
+                            <button onclick="negotiateQuote(${quote.id})" ${isAccepted ? 'disabled' : ''}>Negotiate</button>
+                        </div>
+                    `;
 
-    container.appendChild(quoteDiv);
-});
-
+                    container.appendChild(quoteDiv);
+                });
             } catch (error) {
                 console.error('Error loading quotes:', error);
             }
         }
 
         // Handle accepting a quote
-       async function acceptQuote(quoteId) {
+        async function acceptQuote(quoteId) {
     try {
         const response = await fetch(`/quotes/${quoteId}/accept`, {
             method: 'PUT',
@@ -132,8 +122,10 @@
         });
 
         if (response.ok) {
+            const quote = await response.json(); // Assuming the API returns the quote details
             alert('Quote accepted with the proposed price!');
-            loadDavidQuotes(); // Reload the quotes after accepting
+            // Redirect to davidBill.html with quote details
+            window.location.href = `davidBill.html?id=${quote.id}&price=${quote.price}&clientName=${encodeURIComponent(quote.clientName)}&clientEmail=${encodeURIComponent(quote.clientEmail)}`;
         } else {
             alert('Failed to accept the quote');
         }
@@ -142,7 +134,6 @@
         alert('Error accepting quote');
     }
 }
-
 
 
         // Handle rejecting a quote

@@ -49,7 +49,7 @@ VALUES
     (NULL, 'Amelia', 'Clark', '202 Pine Ave', '4555555555555555', '567-890-1234', 'amelia.clark@example.com', '2024-12-14 13:35:06', ''),
     (NULL, 'joe', 'm', '834 jole st', '1222222222222222', '3132589439', 'joe@gmail.com', '2024-12-14 14:13:43', '123');
 
-INSERT INTO `quotes` (`id`, `clientId`, `propertyAddress`, `squareFeet`, `proposedPrice`, `status`, `createdAt`, `note`)
+INSERT INTO `quotes` (`id`, `clientId`, `propertyAddress`, `squareFeet`, `acceptedPrice`, `status`, `createdAt`, `note`)
 VALUES
     (NULL, '1', '123 Firestone Dr', '1000', '1500.00', 'PENDING', '2024-12-14 13:41:35','Need fixed asap'),
     (NULL, '4', '202 Birchwood Ln', '800', '1200.00', 'NEGOTIATING', '2024-12-14 13:41:35',NULL),
